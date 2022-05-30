@@ -3,7 +3,7 @@ Integrated Studio 1 Assessment 2 Project, Taxi booking system.
 
 **Technical Style Guide**
 
-Variable/Function naming style 
+**Variable/Function naming style **
 
 Camel case 
 var example camelCase 
@@ -12,7 +12,7 @@ function example CamelCase
 
 
  
-Header Files 
+**Header Files **
 
 iostream 
 string 
@@ -22,20 +22,20 @@ vector
 
  
 
-Data structures 
+**Data structures **
 Structure  
 
-struct Customer 
+_**struct Customer **_
   char[30] customerName; 
   Int customerPhoneNumber; 
 
-struct Driver 
+_**struct Driver **_
   char[30] driverName; 
   char[6] licensePlate; 
   string vehicleMake; 
   string vehicleModel; 
 
-struct Trip 
+_**struct Trip **_
   char[30] customerName; 
   char[30] customerPhoneNumber; 
   char[100] destination; 
@@ -48,7 +48,7 @@ struct Trip
   bool tripCompleted; 
 
 
-FILES 
+**FILES **
 
 customerDetails – stores customer details 
 driverDetails – stores driver details 
