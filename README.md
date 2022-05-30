@@ -12,7 +12,7 @@ function example CamelCase
 
 
  
-**Header Files **
+Header Files
 
 iostream 
 string 
@@ -21,21 +21,20 @@ sstrean
 vector 
 
  
-
-**Data structures **
+Data structures
 Structure  
 
-_**struct Customer **_
+struct Customer 
   char[30] customerName; 
   Int customerPhoneNumber; 
 
-_**struct Driver **_
+struct Driver 
   char[30] driverName; 
   char[6] licensePlate; 
   string vehicleMake; 
   string vehicleModel; 
 
-_**struct Trip **_
+struct Trip 
   char[30] customerName; 
   char[30] customerPhoneNumber; 
   char[100] destination; 
@@ -48,7 +47,7 @@ _**struct Trip **_
   bool tripCompleted; 
 
 
-**FILES **
+FILES
 
 customerDetails – stores customer details 
 driverDetails – stores driver details 
