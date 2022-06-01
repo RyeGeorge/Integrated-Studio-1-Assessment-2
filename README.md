@@ -16,8 +16,8 @@ Header Files
 
 iostream 
 string 
-fsteam 
-sstrean 
+fstream 
+sstream 
 vector 
 
  
@@ -37,7 +37,7 @@ struct Driver
 struct Trip 
   char[30] customerName; 
   char[30] customerPhoneNumber; 
-  char[100] destination; 
+  char[100] destinationAddress; 
   Int tripTime; //Minutes 
   pickupTime; 
   string tripDate; 
