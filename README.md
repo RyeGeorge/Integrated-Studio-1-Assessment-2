@@ -50,7 +50,9 @@ struct Trip
 FILES
 
 customerDetails – stores customer details 
-driverDetails – stores driver details 
+driverDetails – stores driver details
+adminDetails – stores admin details 
 tripDetails – stores trip details 
 lostProperty – stores lost property 
-foundProperty – stores found property 
+foundProperty – stores found property
+
