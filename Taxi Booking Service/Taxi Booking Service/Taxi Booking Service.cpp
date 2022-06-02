@@ -41,12 +41,55 @@ struct Trip {
 vector <Customer> registerNewUser(vector<Customer> &customer);
 void writeToFile(vector<Customer>& customer);
 
+void Login();
+void CheckInput();
+void CompanyHeader();
+
 
 int main()
 {
     vector<Customer> customer;
     vector<Customer> customerFromFile;
     vector <Customer> registerNewUser(vector<Customer> &customer)
+      
+    CompanyHeader();
+
+    cout << "Please choose one of the following options:\n";
+    cout << "a) Login\n";
+    cout << "b) Register a new account\n";
+    cout << "c) Exit\n";
+
+    char input;
+    cin >> input;
+    CheckInput();
+
+    switch (input) {
+    case 'a': Login();
+        break;
+    case 'b': RegisterNewUser(); 
+        break;
+    case 'c': break;
+        break;
+    }
+}
+
+void Login() {
+
+}
+
+void RegisterNewUser() {
+
+}
+
+void CheckInput() {
+
+}
+
+void CompanyHeader() {
+    cout << "------------------------------------------------\n";
+    cout << "            Taxi Booking Service\n";
+    cout << "------------------------------------------------\n\n";
+   
 };
 
 
@@ -68,6 +111,7 @@ vector <Customer> registerNewUser(vector<Customer> &customer) {
     }
 
     return (customer);
+
 }
 
 //writeToFile function facilitates the storing of customer detials
