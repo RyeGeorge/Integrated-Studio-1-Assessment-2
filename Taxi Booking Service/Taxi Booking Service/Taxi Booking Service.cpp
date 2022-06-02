@@ -10,14 +10,14 @@ using namespace std;
 struct Customer { 
   char customerName[30]; 
   int customerPhoneNumber;
-}
+};
 
 struct Driver {
     char driverName[30];
     char licensePlate[6];
     string vehicleMake;
     string vehicleModel;
-}
+};
 
 struct Trip {
     char customerName[30];
@@ -30,7 +30,7 @@ struct Trip {
     char pickupLocation[100];
     int passengers;
     bool tripCompleted;
-}
+};
 
 
 
