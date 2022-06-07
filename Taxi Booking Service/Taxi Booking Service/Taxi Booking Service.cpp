@@ -1,27 +1,28 @@
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <vector>
+#include <string> //For using string variable types
+#include <fstream> //To handle file operations
+#include <sstream> //To handle string stream conversion
+#include <vector> //To handle unlimited structure array
 #include <stdlib.h>  //Allows us to use "System("CLS") to clear the console"
 
 using namespace std;
 
 //Data structures
 struct Customer { 
-  string customerName; 
-  int customerPhoneNumber;
+  string firstName; 
+  string lastName;
+  string emailAddress;
+  string phoneNumber;
+  string homeAddress;
+  char password[20];
 
-Customer() {  //Default Constructor
-    customerName = "CustomerNameNULL";
-    customerPhoneNumber = NULL;
-}
-
-Customer(string cN, int cPN){
-    customerName = cN;
-    customerPhoneNumber = cPN;
-}
-
+    Customer() {  //Default Constructor
+        firstName = "firstNameNULL";
+        lastName = "lastNameNULL";
+        emailAddress = "emailAddressNULL";
+        phoneNumber = "phoneNumberNULL";
+        homeAddress = "homeAddressNULL";
+    }
 };
 
 struct Driver {
@@ -44,11 +45,14 @@ struct Trip {
     bool tripCompleted;
 };
 
-vector <Customer> registerNewUser(vector<Customer> &customer);
-void writeToFile(vector<Customer>& customer);
+vector <Customer> RegisterNewUser(vector<Customer> &customer);
+void WriteToFile(vector<Customer>& customer);
+void OutputDetails(vector<Customer>& customer);
 
+int CheckPassword(char passwd[]);
+int Re_enterPassword(char  passwd[]);
 void Login();
-void RegisterNewUser();
+bool ReadFromFile(fstream&, string, string, string);
 void CheckInput(char);
 void CompanyHeader();
 
@@ -61,7 +65,8 @@ int main()
 {
     vector<Customer> customer;
     vector<Customer> customerFromFile;
-    vector <Customer> registerNewUser(vector<Customer> &customer);
+    RegisterNewUser(customer);
+    WriteToFile(customer);
 
     CompanyHeader();
 
@@ -81,10 +86,10 @@ int main()
     
 
     switch (input) {
-    case 'a': AdminMenu(); //Login();
+    case 'a': Login();
         break;
 
-    case 'b': RegisterNewUser();
+    case 'b': //Register new user
         break;
 
     case 'c': break;
@@ -103,27 +108,86 @@ void Login() {
 
     string tempEmail, tempPassword;
 
+    cout << "Please choose one of the following options:\n";
+    cout << "a) Customer login\n";
+    cout << "b) Driver login\n";
+    cout << "c) Admin login\n";
+
+    char input;
+    cin >> input;
+
+    while (input != 'a' && input != 'b' && input != 'c') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+
+    fstream customerFile, driverFile, adminFile;
+
     cout << "Enter your Email: ";
     cin >> tempEmail;
-    //Check email in file
 
     cout << "\nEnter your password: ";
     cin >> tempPassword;
-    //Check password in file
 
-    //If user is customer
-    CustomerMenu();
+    switch (input) {
+    case 'a': 
+        if (ReadFromFile(customerFile, "customerDetails.txt", tempPassword, tempEmail)) {
+            CustomerMenu();
+        }
+        else {
+            cout << "\nIncorrect info";
+        }
+        break;
 
-    //If user is driver
-    DriverMenu();
+    case 'b': 
+        if (ReadFromFile(driverFile, "driverDetails.txt", tempPassword, tempEmail)) {
+            DriverMenu();
+        }
+        else {
+            cout << "\nIncorrect info";
+        }
+        break;
 
-    //If user is admin
-    AdminMenu();
-    
+    case 'c': 
+        if (ReadFromFile(adminFile, "adminDetails.txt", tempPassword, tempEmail)) {
+            AdminMenu();
+        }
+        else {
+            cout << "\nIncorrect info";
+        }
+        break;
+    }
+
 }
 
-void RegisterNewUser() {
+bool ReadFromFile(fstream &file, string fileName, string pw, string e) {
 
+    //Rye George
+
+    bool email = false, password = false;
+
+    file.open(fileName, ios::app);
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            if (line == e) {
+                email = true;
+            }
+            if (line == pw) {
+                password = true;
+            }
+        }
+        file.close();
+    }
+
+    if (email && password) {
+        return true;
+    }
+    else {
+        cout << "email: " << email << "   " << "password: " << password;
+        return false;
+    }
 }
 
 void CheckInput(char input) {
@@ -138,6 +202,7 @@ void CheckInput(char input) {
 }
 
 void CompanyHeader() {
+   // system("CLS");
     cout << "------------------------------------------------\n";
     cout << "            Taxi Booking Service\n";
     cout << "------------------------------------------------\n\n";
@@ -146,34 +211,128 @@ void CompanyHeader() {
 
 
 //registerNewUser to take user input
-vector <Customer> registerNewUser(vector<Customer> &customer) {
+vector <Customer> RegisterNewUser(vector<Customer> &customer) {
+
+    // Shaun Cooper
+    CompanyHeader();
+
     cout << "\nFrom registerNewUser Function";
     cout << "\n***************************";
     Customer m;//we receive one user data at any given time
-    char answer = 'y';
-    while (tolower(answer) == 'y') {
-        cout << "\nPlease enter your full name: ";
-        getline(cin,m.customerName);
-        cout << "\nPlease enter the price of the marker: ";
-        cin >> m.customerPhoneNumber;
-        customer.push_back(m);
-        
-        cout << "\nDo you wish to continue inputting data?";
-        cin >> answer;
+
+    cout << "\nPlease enter your First Name(s): ";
+    getline(cin,m.firstName);
+    cout << "Please enter your Last Name(s): ";
+    getline(cin, m.lastName);
+    cout << "Please enter your Home Address: ";
+    getline(cin, m.homeAddress);
+    cout << "Please enter your Email Address: ";
+    cin >> m.emailAddress;
+    cout << "Please enter your Phone Number: ";
+    cin >> m.phoneNumber;
+    cin.ignore();
+
+    int length = strlen(m.password);
+    while(1){
+        do{
+            cout << "\nPlease enter a password which should contain :" << endl;
+            cout << " * at least 8 characters" << endl;
+            cout << " * at least one upper and lowercase letter " << endl;
+            cout << " * at least one digit " << endl;
+            cout << "Enter password: ";
+            cin.getline(m.password, 20);
+            length = strlen(m.password);
+        } while (length < 8);
+        if (CheckPassword(m.password)) //if return 1 pass below
+            continue;
+        if (Re_enterPassword(m.password))
+            continue;
+
+        break;
     }
 
+    customer.push_back(m);
+    
+    cout << "\ntest output: "<< m.firstName<<", " << m.lastName << ", " << m.emailAddress << ", " << m.homeAddress << ", " << m.phoneNumber << ", " << m.password;
+    cout << endl;
+        //outputDetails(customer);
+        
     return (customer);
 
 }
 
-//writeToFile function facilitates the storing of customer detials
-void writeToFile(vector<Customer>& customer){
+int CheckPassword(char passwd[]) //Check complexity of password
+{
+    //Shaun Cooper
+
+    int count;
+    bool upper_flag = 0, lower_flag = 0, digit_flag = 0;
+    for (count = 0; count < strlen(passwd); count++) 
+    {
+        if (isupper(passwd[count]))
+            upper_flag = 1;
+        else if (islower(passwd[count]))
+            lower_flag = 1;
+        else if (isdigit(passwd[count]))
+            digit_flag = 1;
+    }
+    if (!upper_flag)
+    {
+        cout << "The password does not contain an uppercase letter.\n";
+    }
+
+    if (!lower_flag)
+    {
+        cout << "The password does not contain a lowercase letter.\n";
+    }
+    if (!digit_flag)
+    {
+        cout << "The password does not contain a digit.\n";
+    }
+    if (upper_flag && lower_flag && digit_flag)
+        return 0;   //if all pass
+    else
+        return 1;
+}
+
+int Re_enterPassword(char  passwd[]) //Check the 'Re-enter' password is the same as the first password entered
+{
+    //Shaun Cooper
+
+    char compare_password[20] = { 0, };
+    cout << "Re Enter Your password" << endl;
+    cin.getline(compare_password, 20);
+    if (strcmp(passwd, compare_password))
+    {
+        cout << "Password does not match!" << endl;
+        return 1;
+    }
+    return 0;
+}
+
+
+void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the output on the console
+    //Shaun Cooper
+
+    cout << "\nFrom outputDetails Function";
+    cout << "\n***************************";
+    int i;
+    for (i = 0; i < customer.size(); i++) {
+        cout << "\nThe name you entered is: " << customer[i].firstName;
+        cout << "\nThe phone number you entered is: " << customer[i].phoneNumber;
+    }
+}
+
+
+void WriteToFile(vector<Customer>& customer){ //writeToFile function facilitates the storing of customer detials
+    //Shaun Cooper
+
     cout << "\nWriting to file ";
     cout << "\n***************************";
     int i;
     fstream myFile("customerDetails.csv", ios::app);
     for (i = 0; i < customer.size(); i++) {
-        myFile << customer[i].customerName << "," << customer[i].customerPhoneNumber << endl;
+        myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
     }
     myFile.close();
 }
