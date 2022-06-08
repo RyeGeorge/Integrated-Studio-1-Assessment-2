@@ -8,42 +8,7 @@
 using namespace std;
 
 //Data structures
-struct Customer { 
-  string firstName; 
-  string lastName;
-  string emailAddress;
-  string phoneNumber;
-  string homeAddress;
-  char password[20];
 
-    Customer() {  //Default Constructor
-        firstName = "firstNameNULL";
-        lastName = "lastNameNULL";
-        emailAddress = "emailAddressNULL";
-        phoneNumber = "phoneNumberNULL";
-        homeAddress = "homeAddressNULL";
-    }
-};
-
-struct Driver {
-    char driverName[30];
-    char licensePlate[6];
-    string vehicleMake;
-    string vehicleModel;
-};
-
-struct Trip {
-    char customerName[30];
-    char customerPhoneNumber[30];
-    char destinationAddress[100];
-    int tripTime; //Minutes
-    // pickupTime; //Confirm varibale type
-    string tripDate;
-    float price;
-    char pickupLocation[100];
-    int passengers;
-    bool tripCompleted;
-};
 
 vector <Customer> RegisterNewUser(vector<Customer> &customer);
 void WriteToFile(vector<Customer>& customer);
