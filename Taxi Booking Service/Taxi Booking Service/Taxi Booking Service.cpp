@@ -17,40 +17,62 @@ struct Customer {
   char password[20];
 
     Customer() {  //Default Constructor
-        firstName = "firstNameNULL";
-        lastName = "lastNameNULL";
-        emailAddress = "emailAddressNULL";
-        phoneNumber = "phoneNumberNULL";
-        homeAddress = "homeAddressNULL";
+        firstName = "firstName";
+        lastName = "lastName";
+        emailAddress = "emailAddress";
+        phoneNumber = "phoneNumber";
+        homeAddress = "homeAddress";
     }
 };
 
 struct Driver {
-    char driverName[30];
-    char licensePlate[6];
+    string driverName;
+    string licensePlate;
     string vehicleMake;
     string vehicleModel;
+
+        Driver() {
+            driverName = "driverName";
+            licensePlate = "licensePlate";
+            vehicleMake = "vehicleMake";
+            vehicleModel = "vehicleModel";
+        }
 };
 
 struct Trip {
-    char customerName[30];
-    char customerPhoneNumber[30];
-    char destinationAddress[100];
+    string customerName;
+    string customerPhoneNumber;
+    string destinationAddress;
     int tripTime; //Minutes
-    // pickupTime; //Confirm varibale type
+    string pickupTime; //Confirm varibale type
     string tripDate;
     float price;
-    char pickupLocation[100];
+    string pickupLocation;
     int passengers;
     bool tripCompleted;
+
+        Trip() {
+            customerName = "customerName";
+            customerPhoneNumber = "customerPhoneNumber";
+            destinationAddress = "destinationAddress";
+            tripTime = 1;
+            pickupTime = "pickupTime";
+            tripDate = "tripDate";
+            price = 1;
+            pickupLocation = "pickupLocation";
+            passengers = 1;
+            tripCompleted = true;
+            }
 };
 
 vector <Customer> RegisterNewUser(vector<Customer> &customer);
+vector <Trip> NewTrip(vector<Trip>& trip);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
+
 void Login();
 void CheckInput(char);
 void CompanyHeader();
@@ -64,8 +86,10 @@ int main()
 {
     vector<Customer> customer;
     vector<Customer> customerFromFile;
-    RegisterNewUser(customer);
-    WriteToFile(customer);
+    vector<Trip> trip;
+    vector<Trip> tripFromFile;
+    NewTrip(trip);
+    
 
     CompanyHeader();
 
@@ -411,4 +435,43 @@ void AdminMenu() {
     case 'e': break;
         break;
     }
+}
+
+vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
+    //Shaun Cooper
+
+    cout << "--------------------------" << endl;
+    cout << "     New Trip Details     " << endl;
+    cout << "--------------------------" << endl;
+
+    Trip m;//we receive one user data at any given time
+    cout << "\nEnter the destination address: ";
+    getline(cin, m.destinationAddress);
+    cout << "Enter your pickup address: ";
+    getline(cin, m.pickupLocation);
+    cout << "Enter the date for the trip (dd/mm/yyyy): ";
+    getline(cin, m.tripDate);
+    cout << "Enter the time you would like to be picked up: ";
+    getline(cin, m.pickupTime);
+    cout << "Enter customer name: ";
+    getline(cin, m.customerName);
+    cout << "How many passengers will there be?: ";
+    cin >> m.passengers;
+    cout << "How long will the trip take? (mins): ";
+    cin >> m.tripTime;
+    m.price = (m.tripTime * 1.5)*(m.passengers*1.15+1); // $2per min + 15% for 1 passenger, then adding 15% for each successive passenger.
+    cout << "\nThe price of your trip is: $" << m.price << endl;
+    cout << endl;
+
+    trip.push_back(m);
+
+    //Write trip details to databse
+    int i;
+    fstream myFile("tripDetails.csv", ios::app);
+    for (i = 0; i < trip.size(); i++) {
+        myFile << trip[i].customerName << "," << trip[i].tripDate<< "," << trip[i].pickupTime<< "," << trip[i].pickupLocation<< "," << trip[i].destinationAddress<< "," << trip[i].tripTime << "," << trip[i].passengers << "," << trip[i].price<< endl;
+    }
+    myFile.close();
+
+    return (trip);
 }

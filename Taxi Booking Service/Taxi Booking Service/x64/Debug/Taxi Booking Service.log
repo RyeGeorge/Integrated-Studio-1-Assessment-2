@@ -1,4 +1,5 @@
 ﻿  Taxi Booking Service.cpp
-C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(171,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(180,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  Taxi Booking Service.vcxproj -> C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\x64\Debug\Taxi Booking Service.exe
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(194,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(203,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(461,33): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Taxi Booking Service.vcxproj -> C:\Users\Shaun Cooper\Source\Repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\x64\Debug\Taxi Booking Service.exe
