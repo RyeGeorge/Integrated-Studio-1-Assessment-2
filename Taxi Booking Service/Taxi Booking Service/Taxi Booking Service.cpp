@@ -52,7 +52,7 @@ void OutputDetails(vector<Customer>& customer);
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
 void Login();
-bool ReadFromFile(fstream&, string, string, string);
+bool ReadFromFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
 
@@ -65,8 +65,8 @@ int main()
 {
     vector<Customer> customer;
     vector<Customer> customerFromFile;
-    RegisterNewUser(customer);
-    WriteToFile(customer);
+    //RegisterNewUser(customer);
+    //WriteToFile(customer);
 
     CompanyHeader();
 
@@ -89,7 +89,7 @@ int main()
     case 'a': Login();
         break;
 
-    case 'b': //Register new user
+    case 'b': RegisterNewUser(customer);
         break;
 
     case 'c': break;
@@ -97,98 +97,7 @@ int main()
     }
 }
 
-void Login() {
-    
-    //Rye George
-    
-    system("CLS");
-    CompanyHeader();
 
-    cout << "                Login Menu                   \n";
-
-    string tempEmail, tempPassword;
-
-    cout << "Please choose one of the following options:\n";
-    cout << "a) Customer login\n";
-    cout << "b) Driver login\n";
-    cout << "c) Admin login\n";
-
-    char input;
-    cin >> input;
-
-    while (input != 'a' && input != 'b' && input != 'c') { //Validates if input is an acceptable value
-        CheckInput(input);
-        cin >> input;
-        cout << endl;
-    }
-
-    fstream customerFile, driverFile, adminFile;
-
-    cout << "Enter your Email: ";
-    cin >> tempEmail;
-
-    cout << "\nEnter your password: ";
-    cin >> tempPassword;
-
-    switch (input) {
-    case 'a': 
-        if (ReadFromFile(customerFile, "customerDetails.txt", tempPassword, tempEmail)) {
-            CustomerMenu();
-        }
-        else {
-            cout << "\nIncorrect info";
-        }
-        break;
-
-    case 'b': 
-        if (ReadFromFile(driverFile, "driverDetails.txt", tempPassword, tempEmail)) {
-            DriverMenu();
-        }
-        else {
-            cout << "\nIncorrect info";
-        }
-        break;
-
-    case 'c': 
-        if (ReadFromFile(adminFile, "adminDetails.txt", tempPassword, tempEmail)) {
-            AdminMenu();
-        }
-        else {
-            cout << "\nIncorrect info";
-        }
-        break;
-    }
-
-}
-
-bool ReadFromFile(fstream &file, string fileName, string pw, string e) {
-
-    //Rye George
-
-    bool email = false, password = false;
-
-    file.open(fileName, ios::app);
-    if (file.is_open()) {
-        string line;
-        while (getline(file, line)) {
-            if (line == e) {
-                email = true;
-            }
-            if (line == pw) {
-                password = true;
-            }
-        }
-        file.close();
-    }
-
-    if (email && password) {
-        return true;
-    }
-    else {
-        cout << "email: " << email << "   " << "password: " << password;
-        return false;
-    }
-}
 
 void CheckInput(char input) {
 
@@ -330,13 +239,98 @@ void WriteToFile(vector<Customer>& customer){ //writeToFile function facilitates
     cout << "\nWriting to file ";
     cout << "\n***************************";
     int i;
-    fstream myFile("customerDetails.csv", ios::app);
+    fstream myFile;
     for (i = 0; i < customer.size(); i++) {
+        myFile.open("customerDetails.csv", ios::app);
         myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
     }
     myFile.close();
 }
 
+
+void Login() {
+
+    //Rye George
+
+    system("CLS");
+    CompanyHeader();
+
+    cout << "                Login Menu                   \n";
+
+    string tempEmail;
+    string tempPassword;
+
+    cout << "Please choose one of the following options:\n";
+    cout << "a) Customer login\n";
+    cout << "b) Driver login\n";
+    cout << "c) Admin login\n";
+
+    char input;
+    cin >> input;
+
+    while (input != 'a' && input != 'b' && input != 'c') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+
+    cout << "Enter your Email: ";
+    cin >> tempEmail;
+
+    cout << "\nEnter your password: ";
+    cin >> tempPassword;
+    
+
+    switch (input) {
+    case 'a': ReadFromFile("customerDetails.csv", tempPassword, tempEmail);
+        break;
+    }
+}
+
+bool ReadFromFile(string fileName, string pw, string e) {
+
+    //Rye George
+
+    fstream myFile;
+    myFile.open(fileName, ios::in);
+
+    if (myFile.is_open()) {
+
+        string line;
+        string firstName, lastName, email, address, phoneNumber, password;
+
+        while (getline(myFile, line))
+        {
+            stringstream ss(line);
+            getline(ss, firstName, ',');
+            getline(ss, lastName, ',');
+            getline(ss, email, ',');
+            getline(ss, address, ',');
+            getline(ss, phoneNumber, ',');
+            getline(ss, password, ',');
+            
+            cout << "Email: " << e << "   " << "password: " << pw << endl;
+            cout << firstName << "   " << lastName  << "   " << email << "   " << address << "   " << phoneNumber << "   " << password << endl;
+            if (password == pw && email == e) {
+                cout << "Success\n\n";
+            }
+            else if (password == pw) {
+                cout << "PasswordCorrect\n\n";
+            }
+            else if (email == e) {
+                cout << "Emailcorrect\n\n";
+            }
+            else {
+                cout << "Fail\n\n";
+            }
+        }
+        myFile.close();
+    }
+    else {
+        cout << "File not open";
+    }
+    return 0;
+}
 
 
 //

@@ -1,2 +1,3 @@
-Shaun,Cooper,shaun.charles.cooper@gmail.com,22 Taitonga Lane, Stanmore Bay, Auckland,0212364085,TestPassword1
-Shaun,321,321,321,321,Test321654
+Shaun,Cooper,shaun.charles.cooper@gmail.com,22 Taitonga Lane, Stanmore Bay, Auckland,212364085,TestPassword1
+Shaun,321,321,321,321,Test321654,,
+testFirstname,testLastname, testEmail,testAddress,testNumber,testPassword1,,
