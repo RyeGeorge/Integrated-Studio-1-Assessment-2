@@ -8,13 +8,13 @@
 using namespace std;
 
 //Data structures
-struct Customer { 
-  string firstName; 
-  string lastName;
-  string emailAddress;
-  string phoneNumber;
-  string homeAddress;
-  char password[20];
+struct Customer {
+    string firstName;
+    string lastName;
+    string emailAddress;
+    string phoneNumber;
+    string homeAddress;
+    char password[20];
 
     Customer() {  //Default Constructor
         firstName = "firstNameNULL";
@@ -52,9 +52,12 @@ void OutputDetails(vector<Customer>& customer);
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
 void Login();
-bool ReadFromFile(string, string, string);
+bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
+
+void FileComplaint();
+void DisplayComplaints();
 
 void CustomerMenu();
 void DriverMenu();
@@ -83,6 +86,8 @@ int main()
         cin >> input;
         cout << endl;
     }
+    cin.clear();
+    cin.ignore(100, '\n');
     
 
     switch (input) {
@@ -273,21 +278,30 @@ void Login() {
         cin >> input;
         cout << endl;
     }
-
-    cout << "Enter your Email: ";
-    cin >> tempEmail;
-
-    cout << "\nEnter your password: ";
-    cin >> tempPassword;
     
 
     switch (input) {
-    case 'a': ReadFromFile("customerDetails.csv", tempPassword, tempEmail);
+    case 'a': 
+        for (int i = 3; i > 0; i--) {
+
+            cout << "Enter your Email: ";
+            cin >> tempEmail;
+
+            cout << "\nEnter your password: ";
+            cin >> tempPassword;
+
+            if (ReadFromLoginFile("customerDetails.csv", tempPassword, tempEmail)) {
+                CustomerMenu();
+                break;
+            }
+
+            cout << "\nPassword or Email are incorrect, you have " << i-1 << " attemps left\n\n\n";
+        }
         break;
-    }
+        }
 }
 
-bool ReadFromFile(string fileName, string pw, string e) {
+bool ReadFromLoginFile(string fileName, string pw, string e) {
 
     //Rye George
 
@@ -309,20 +323,8 @@ bool ReadFromFile(string fileName, string pw, string e) {
             getline(ss, phoneNumber, ',');
             getline(ss, password, ',');
             
-            cout << "Email: " << e << "   " << "password: " << pw << endl;
-            cout << firstName << "   " << lastName  << "   " << email << "   " << address << "   " << phoneNumber << "   " << password << endl;
-            if (password == pw && email == e) {
-                cout << "Success\n\n";
-            }
-            else if (password == pw) {
-                cout << "PasswordCorrect\n\n";
-            }
-            else if (email == e) {
-                cout << "Emailcorrect\n\n";
-            }
-            else {
-                cout << "Fail\n\n";
-            }
+            if ((password == pw) && (email == e))
+                return true;
         }
         myFile.close();
     }
@@ -330,6 +332,69 @@ bool ReadFromFile(string fileName, string pw, string e) {
         cout << "File not open";
     }
     return 0;
+}
+
+
+void FileComplaint() {
+
+    //Rye George
+
+    string driverFirstName, driverLastName, complaint;
+
+    cout << "\nFill out the below information to file a complaint against a driver\n\n";
+
+    cout << "Enter drivers first name: ";
+    cin >> driverFirstName;
+    cout << endl;
+
+    cout << "Enter drivers last name: ";
+    cin >> driverLastName;
+    cout << endl;
+
+    //Clears console input
+    cin.clear();
+    cin.ignore(100, '\n');
+
+    cout << "What is your complaint: ";
+    getline(cin, complaint);
+    cout << endl << endl;
+
+
+    //Write complaint into file
+    fstream myFile;
+
+    myFile.open("driverComplaints.csv", ios::app);
+    if (myFile.is_open()) {
+
+        myFile << driverFirstName << "," << driverLastName << "," << complaint << "," << endl;
+    }
+}
+
+void DisplayComplaints() {
+
+    //Rye George
+
+    fstream myFile;
+
+    myFile.open("driverComplaints.csv", ios::in);
+    if (myFile.is_open()) {
+        string line;
+        string driverFirstName, driverLastName, complaint;
+        int complaintNum = 0;
+
+        while (getline(myFile, line)) {
+  
+            stringstream ss(line);
+            getline(ss, driverFirstName, ',');
+            getline(ss, driverLastName, ',');
+            getline(ss, complaint, ',');
+            complaintNum++;
+
+            //Print complaint to console
+            cout << endl << complaintNum << ":   Driver:     " << driverFirstName << " " << driverLastName << endl;
+            cout << "     Complaint:  " << complaint << endl << endl;
+        }
+    }
 }
 
 
@@ -374,10 +439,10 @@ void CustomerMenu() {
     case 'c': //Search trip history
         break;
 
-    case 'd': //Report lost propery 
+    case 'd':
         break;
 
-    case 'e': //Report complaint
+    case 'e': FileComplaint();
         break;
 
     case 'f': break;
