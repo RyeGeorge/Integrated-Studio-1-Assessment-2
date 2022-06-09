@@ -26,26 +26,35 @@ Data structures
 Structure  
 
 struct Customer 
-  char[30] customerName; 
-  Int customerPhoneNumber; 
+    string firstName;
+    string lastName;
+    string emailAddress;
+    string phoneNumber;
+    string homeAddress;
+    char password[20];
 
 struct Driver 
-  char[30] driverName; 
-  char[6] licensePlate; 
-  string vehicleMake; 
-  string vehicleModel; 
+    string firstName;
+    string lastName;
+    string emailAddress;
+    string phoneNumber;
+    string homeAddress;
+    string licensePlate;
+    string vehicleMake;
+    string vehicleModel;
+    char password[20]; 
 
 struct Trip 
-  char[30] customerName; 
-  char[30] customerPhoneNumber; 
-  char[100] destinationAddress; 
-  Int tripTime; //Minutes 
-  pickupTime; 
-  string tripDate; 
-   float price; 
-  char[100] pickupLocation; 
-  int passengers; 
-  bool tripCompleted; 
+    string customerName;
+    string customerPhoneNumber;
+    string destinationAddress;
+    int tripTime; //Minutes
+    string pickupTime; 
+    string tripDate;
+    float price;
+    string pickupLocation;
+    int passengers;
+    bool tripCompleted;
 
 
 FILES
