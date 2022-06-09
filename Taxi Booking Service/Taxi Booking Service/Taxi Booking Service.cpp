@@ -17,40 +17,62 @@ struct Customer {
     char password[20];
 
     Customer() {  //Default Constructor
-        firstName = "firstNameNULL";
-        lastName = "lastNameNULL";
-        emailAddress = "emailAddressNULL";
-        phoneNumber = "phoneNumberNULL";
-        homeAddress = "homeAddressNULL";
+        firstName = "firstName";
+        lastName = "lastName";
+        emailAddress = "emailAddress";
+        phoneNumber = "phoneNumber";
+        homeAddress = "homeAddress";
     }
 };
 
 struct Driver {
-    char driverName[30];
-    char licensePlate[6];
+    string driverName;
+    string licensePlate;
     string vehicleMake;
     string vehicleModel;
+
+    Driver() {
+        driverName = "driverName";
+        licensePlate = "licensePlate";
+        vehicleMake = "vehicleMake";
+        vehicleModel = "vehicleModel";
+    }
 };
 
 struct Trip {
-    char customerName[30];
-    char customerPhoneNumber[30];
-    char destinationAddress[100];
+    string customerName;
+    string customerPhoneNumber;
+    string destinationAddress;
     int tripTime; //Minutes
-    // pickupTime; //Confirm varibale type
+    string pickupTime; //Confirm varibale type
     string tripDate;
     float price;
-    char pickupLocation[100];
+    string pickupLocation;
     int passengers;
     bool tripCompleted;
+
+    Trip() {
+        customerName = "customerName";
+        customerPhoneNumber = "customerPhoneNumber";
+        destinationAddress = "destinationAddress";
+        tripTime = 1;
+        pickupTime = "pickupTime";
+        tripDate = "tripDate";
+        price = 1;
+        pickupLocation = "pickupLocation";
+        passengers = 1;
+        tripCompleted = true;
+    }
 };
 
-vector <Customer> RegisterNewUser(vector<Customer> &customer);
+vector <Customer> RegisterNewUser(vector<Customer>& customer);
+vector <Trip> NewTrip(vector<Trip>& trip);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
+
 void Login();
 bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
@@ -68,8 +90,10 @@ int main()
 {
     vector<Customer> customer;
     vector<Customer> customerFromFile;
-    //RegisterNewUser(customer);
-    //WriteToFile(customer);
+    vector<Trip> trip;
+    vector<Trip> tripFromFile;
+    NewTrip(trip);
+
 
     CompanyHeader();
 
@@ -86,15 +110,15 @@ int main()
         cin >> input;
         cout << endl;
     }
+  
     cin.clear();
     cin.ignore(100, '\n');
-    
 
     switch (input) {
-    case 'a': Login();
+    case 'a': AdminMenu(); //Login();
         break;
 
-    case 'b': RegisterNewUser(customer);
+    case 'b': //RegisterNewUser();
         break;
 
     case 'c': break;
@@ -102,30 +126,58 @@ int main()
     }
 }
 
+void Login() {
 
+    //Rye George
+
+    system("CLS");
+    CompanyHeader();
+
+    cout << "                Login Menu                   \n";
+
+    string tempEmail, tempPassword;
+
+    cout << "Enter your Email: ";
+    cin >> tempEmail;
+    //Check email in file
+
+    cout << "\nEnter your password: ";
+    cin >> tempPassword;
+    //Check password in file
+
+    //If user is customer
+    CustomerMenu();
+
+    //If user is driver
+    DriverMenu();
+
+    //If user is admin
+    AdminMenu();
+
+}
 
 void CheckInput(char input) {
 
     //  Rye George
-    
+
     cin.clear();
     cin.ignore(100, '\n');
     cout << "Error: Incorrect Input\n";
     cout << "Please re-enter your choice: ";
-    
+
 }
 
 void CompanyHeader() {
-   // system("CLS");
+    // system("CLS");
     cout << "------------------------------------------------\n";
     cout << "            Taxi Booking Service\n";
     cout << "------------------------------------------------\n\n";
-   
+
 };
 
 
 //registerNewUser to take user input
-vector <Customer> RegisterNewUser(vector<Customer> &customer) {
+vector <Customer> RegisterNewUser(vector<Customer>& customer) {
 
     // Shaun Cooper
     CompanyHeader();
@@ -135,7 +187,7 @@ vector <Customer> RegisterNewUser(vector<Customer> &customer) {
     Customer m;//we receive one user data at any given time
 
     cout << "\nPlease enter your First Name(s): ";
-    getline(cin,m.firstName);
+    getline(cin, m.firstName);
     cout << "Please enter your Last Name(s): ";
     getline(cin, m.lastName);
     cout << "Please enter your Home Address: ";
@@ -147,8 +199,8 @@ vector <Customer> RegisterNewUser(vector<Customer> &customer) {
     cin.ignore();
 
     int length = strlen(m.password);
-    while(1){
-        do{
+    while (1) {
+        do {
             cout << "\nPlease enter a password which should contain :" << endl;
             cout << " * at least 8 characters" << endl;
             cout << " * at least one upper and lowercase letter " << endl;
@@ -166,11 +218,11 @@ vector <Customer> RegisterNewUser(vector<Customer> &customer) {
     }
 
     customer.push_back(m);
-    
-    cout << "\ntest output: "<< m.firstName<<", " << m.lastName << ", " << m.emailAddress << ", " << m.homeAddress << ", " << m.phoneNumber << ", " << m.password;
+
+    cout << "\ntest output: " << m.firstName << ", " << m.lastName << ", " << m.emailAddress << ", " << m.homeAddress << ", " << m.phoneNumber << ", " << m.password;
     cout << endl;
-        //outputDetails(customer);
-        
+    //outputDetails(customer);
+
     return (customer);
 
 }
@@ -181,7 +233,7 @@ int CheckPassword(char passwd[]) //Check complexity of password
 
     int count;
     bool upper_flag = 0, lower_flag = 0, digit_flag = 0;
-    for (count = 0; count < strlen(passwd); count++) 
+    for (count = 0; count < strlen(passwd); count++)
     {
         if (isupper(passwd[count]))
             upper_flag = 1;
@@ -238,15 +290,14 @@ void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the o
 }
 
 
-void WriteToFile(vector<Customer>& customer){ //writeToFile function facilitates the storing of customer detials
+void WriteToFile(vector<Customer>& customer) { //writeToFile function facilitates the storing of customer detials
     //Shaun Cooper
 
     cout << "\nWriting to file ";
     cout << "\n***************************";
     int i;
-    fstream myFile;
+    fstream myFile("customerDetails.csv", ios::app);
     for (i = 0; i < customer.size(); i++) {
-        myFile.open("customerDetails.csv", ios::app);
         myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
     }
     myFile.close();
@@ -534,4 +585,43 @@ void AdminMenu() {
     case 'e': break;
         break;
     }
+}
+
+vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
+    //Shaun Cooper
+
+    cout << "--------------------------" << endl;
+    cout << "     New Trip Details     " << endl;
+    cout << "--------------------------" << endl;
+
+    Trip m;//we receive one user data at any given time
+    cout << "\nEnter the destination address: ";
+    getline(cin, m.destinationAddress);
+    cout << "Enter your pickup address: ";
+    getline(cin, m.pickupLocation);
+    cout << "Enter the date for the trip (dd/mm/yyyy): ";
+    getline(cin, m.tripDate);
+    cout << "Enter the time you would like to be picked up: ";
+    getline(cin, m.pickupTime);
+    cout << "Enter customer name: ";
+    getline(cin, m.customerName);
+    cout << "How many passengers will there be?: ";
+    cin >> m.passengers;
+    cout << "How long will the trip take? (mins): ";
+    cin >> m.tripTime;
+    m.price = (m.tripTime * 1.5) * (m.passengers * 1.15 + 1); // $1.50 per min + 15% for 1 passenger, then adding 15% for each successive passenger.
+    cout << "\nThe price of your trip is: $" << m.price << endl;
+    cout << endl;
+
+    trip.push_back(m);
+
+    //Write trip details to databse
+    int i;
+    fstream myFile("tripDetails.csv", ios::app);
+    for (i = 0; i < trip.size(); i++) {
+        myFile << trip[i].customerName << "," << trip[i].tripDate << "," << trip[i].pickupTime << "," << trip[i].pickupLocation << "," << trip[i].destinationAddress << "," << trip[i].tripTime << "," << trip[i].passengers << "," << trip[i].price << endl;
+    }
+    myFile.close();
+
+    return (trip);
 }
