@@ -65,4 +65,5 @@ adminDetails – stores admin details
 tripDetails – stores trip details 
 lostProperty – stores lost property 
 foundProperty – stores found property
+driverComplaints - stores complaints made against drivers
 
