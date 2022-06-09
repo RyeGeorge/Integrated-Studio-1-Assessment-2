@@ -26,13 +26,22 @@ struct Customer {
 };
 
 struct Driver {
-    string driverName;
+    string firstName;
+    string lastName;
+    string emailAddress;
+    string phoneNumber;
+    string homeAddress;
     string licensePlate;
     string vehicleMake;
     string vehicleModel;
+    char password[20];
 
     Driver() {
-        driverName = "driverName";
+        firstName = "firstName";
+        lastName = "lastName";
+        emailAddress = "emailAddress";
+        phoneNumber = "phoneNumber";
+        homeAddress = "homeAddress";
         licensePlate = "licensePlate";
         vehicleMake = "vehicleMake";
         vehicleModel = "vehicleModel";
@@ -44,7 +53,7 @@ struct Trip {
     string customerPhoneNumber;
     string destinationAddress;
     int tripTime; //Minutes
-    string pickupTime; //Confirm varibale type
+    string pickupTime; 
     string tripDate;
     float price;
     string pickupLocation;
@@ -65,8 +74,21 @@ struct Trip {
     }
 };
 
+struct LostProperty {
+    string itemType;
+    string identifyingFeature;
+    float value;
+};
+
+struct FoundProperty {
+    string itemType;
+    string identifyingFeature;
+    float value;
+};
+
 vector <Customer> RegisterNewUser(vector<Customer>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
+vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
@@ -92,7 +114,9 @@ int main()
     vector<Customer> customerFromFile;
     vector<Trip> trip;
     vector<Trip> tripFromFile;
-    NewTrip(trip);
+    //NewTrip(trip);
+    vector<LostProperty> lProperty;
+    ReportLostProperty(lProperty);
 
 
     CompanyHeader();
@@ -481,7 +505,7 @@ void CustomerMenu() {
     }
 
     switch (input) {
-    case 'a': //Enter New Trip
+    case 'a': NewTrip();
         break;
 
     case 'b': //Update user details
@@ -615,7 +639,7 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
 
     trip.push_back(m);
 
-    //Write trip details to databse
+    //Write trip details to database
     int i;
     fstream myFile("tripDetails.csv", ios::app);
     for (i = 0; i < trip.size(); i++) {
@@ -624,4 +648,68 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
     myFile.close();
 
     return (trip);
+}
+
+vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Report lost property
+    //Shaun Cooper
+
+    cout << "--------------------------" << endl;
+    cout << "   Report Lost Property   " << endl;
+    cout << "--------------------------" << endl;
+
+    LostProperty m;
+    cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
+    cout << "Please choose one of the following options:\n";
+    cout << "a) Clothing\n";
+    cout << "b) Wallet\n";
+    cout << "c) Mobile Phone\n";
+    cout << "d) Bag\n";
+    cout << "e) Other accesory\n";
+    cout << "f) Other\n";
+
+    char input;
+    cin >> input;
+
+    while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+
+    switch (input) { //Switch to describe the item type
+    case 'a': m.itemType = "Clothing";
+        break;
+
+    case 'b': m.itemType = "Wallet";
+        break;
+
+    case 'c': m.itemType = "Mobile Phone";
+        break;
+
+    case 'd': m.itemType = "Bag";
+        break;
+
+    case 'e': m.itemType = "Other accessory";
+        break;
+
+    case 'f': m.itemType = "Other";
+        break;
+    }
+
+    cout << "\nDescribe any identifying features: ";
+    getline(cin, m.identifyingFeature);
+    cout << "Enter the property value: $";
+    cin>>m.value;
+
+    property.push_back(m);
+
+    //Write trip details to database
+    int i;
+    fstream myFile("lostProperty.csv", ios::app);
+    for (i = 0; i < property.size(); i++) {
+        myFile << property[i].itemType << "," << property[i].identifyingFeature << "," << property[i].value << endl;
+    }
+    myFile.close();
+
+    return (property);
 }
