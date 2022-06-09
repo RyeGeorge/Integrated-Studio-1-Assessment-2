@@ -74,8 +74,12 @@ int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
 
 void Login();
+bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
+
+void FileComplaint();
+void DisplayComplaints();
 
 void CustomerMenu();
 void DriverMenu();
@@ -106,7 +110,9 @@ int main()
         cin >> input;
         cout << endl;
     }
-
+  
+    cin.clear();
+    cin.ignore(100, '\n');
 
     switch (input) {
     case 'a': AdminMenu(); //Login();
@@ -298,6 +304,150 @@ void WriteToFile(vector<Customer>& customer) { //writeToFile function facilitate
 }
 
 
+void Login() {
+
+    //Rye George
+
+    system("CLS");
+    CompanyHeader();
+
+    cout << "                Login Menu                   \n";
+
+    string tempEmail;
+    string tempPassword;
+
+    cout << "Please choose one of the following options:\n";
+    cout << "a) Customer login\n";
+    cout << "b) Driver login\n";
+    cout << "c) Admin login\n";
+
+    char input;
+    cin >> input;
+
+    while (input != 'a' && input != 'b' && input != 'c') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+    
+
+    switch (input) {
+    case 'a': 
+        for (int i = 3; i > 0; i--) {
+
+            cout << "Enter your Email: ";
+            cin >> tempEmail;
+
+            cout << "\nEnter your password: ";
+            cin >> tempPassword;
+
+            if (ReadFromLoginFile("customerDetails.csv", tempPassword, tempEmail)) {
+                CustomerMenu();
+                break;
+            }
+
+            cout << "\nPassword or Email are incorrect, you have " << i-1 << " attemps left\n\n\n";
+        }
+        break;
+        }
+}
+
+bool ReadFromLoginFile(string fileName, string pw, string e) {
+
+    //Rye George
+
+    fstream myFile;
+    myFile.open(fileName, ios::in);
+
+    if (myFile.is_open()) {
+
+        string line;
+        string firstName, lastName, email, address, phoneNumber, password;
+
+        while (getline(myFile, line))
+        {
+            stringstream ss(line);
+            getline(ss, firstName, ',');
+            getline(ss, lastName, ',');
+            getline(ss, email, ',');
+            getline(ss, address, ',');
+            getline(ss, phoneNumber, ',');
+            getline(ss, password, ',');
+            
+            if ((password == pw) && (email == e))
+                return true;
+        }
+        myFile.close();
+    }
+    else {
+        cout << "File not open";
+    }
+    return 0;
+}
+
+
+void FileComplaint() {
+
+    //Rye George
+
+    string driverFirstName, driverLastName, complaint;
+
+    cout << "\nFill out the below information to file a complaint against a driver\n\n";
+
+    cout << "Enter drivers first name: ";
+    cin >> driverFirstName;
+    cout << endl;
+
+    cout << "Enter drivers last name: ";
+    cin >> driverLastName;
+    cout << endl;
+
+    //Clears console input
+    cin.clear();
+    cin.ignore(100, '\n');
+
+    cout << "What is your complaint: ";
+    getline(cin, complaint);
+    cout << endl << endl;
+
+
+    //Write complaint into file
+    fstream myFile;
+
+    myFile.open("driverComplaints.csv", ios::app);
+    if (myFile.is_open()) {
+
+        myFile << driverFirstName << "," << driverLastName << "," << complaint << "," << endl;
+    }
+}
+
+void DisplayComplaints() {
+
+    //Rye George
+
+    fstream myFile;
+
+    myFile.open("driverComplaints.csv", ios::in);
+    if (myFile.is_open()) {
+        string line;
+        string driverFirstName, driverLastName, complaint;
+        int complaintNum = 0;
+
+        while (getline(myFile, line)) {
+  
+            stringstream ss(line);
+            getline(ss, driverFirstName, ',');
+            getline(ss, driverLastName, ',');
+            getline(ss, complaint, ',');
+            complaintNum++;
+
+            //Print complaint to console
+            cout << endl << complaintNum << ":   Driver:     " << driverFirstName << " " << driverLastName << endl;
+            cout << "     Complaint:  " << complaint << endl << endl;
+        }
+    }
+}
+
 
 //
 //Menu functions
@@ -340,10 +490,10 @@ void CustomerMenu() {
     case 'c': //Search trip history
         break;
 
-    case 'd': //Report lost propery 
+    case 'd':
         break;
 
-    case 'e': //Report complaint
+    case 'e': FileComplaint();
         break;
 
     case 'f': break;
