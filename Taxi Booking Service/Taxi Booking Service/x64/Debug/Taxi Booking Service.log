@@ -1,4 +1,5 @@
 ﻿  Taxi Booking Service.cpp
-D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(146,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(155,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(248,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(257,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(712,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Taxi Booking Service.vcxproj -> D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\x64\Debug\Taxi Booking Service.exe
