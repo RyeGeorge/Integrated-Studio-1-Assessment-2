@@ -107,6 +107,7 @@ void CustomerMenu();
 void DriverMenu();
 void AdminMenu();
 
+vector<Trip> trip;
 
 int main()
 {
@@ -505,7 +506,7 @@ void CustomerMenu() {
     }
 
     switch (input) {
-    case 'a': NewTrip();
+    case 'a': NewTrip(trip);
         break;
 
     case 'b': //Update user details
