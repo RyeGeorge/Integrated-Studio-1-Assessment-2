@@ -1,2 +1,5 @@
+$ touch ~/.gitignore
+$ git config --global core.excludesFile ~/.gitignore
+
 *.suo
 *.db
