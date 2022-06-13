@@ -107,6 +107,7 @@ void ViewCustomerDetails();
 void ViewDriverDetails();
 void PrintAccountDetails(string);
 void SearchAccountDetails(string);
+void UpdateUserDetails(string);
 
 void CustomerMenu();
 void DriverMenu();
@@ -121,7 +122,7 @@ int main()
     vector<Customer> customerFromFile;
     vector<Trip> trip;
     vector<Trip> tripFromFile;
-    //NewTrip(trip);
+    NewTrip(trip);
     vector<LostProperty> lProperty;
     ReportLostProperty(lProperty);
 
@@ -582,6 +583,92 @@ void PrintAccountDetails(string fileName) {
 }
 
 
+void UpdateUserDetails(string fileName) {
+
+    fstream myFile;
+    fstream tempFile;
+
+    string line;
+    string fName, lName;
+    string firstName, lastName, email, address, phoneNumber, password;
+    bool nameCheck = false;
+
+    cout << "To Update your accout details please confirm your name: \n";
+
+    cout << "Enter your first name: ";
+    cin >> fName;
+
+    cout << "Enter your last name: ";
+    cin >> lName;
+    cout << endl;
+
+
+    tempFile.open("test1.csv", ios::out);
+
+    myFile.open("test.csv", ios::in);
+    if (myFile.is_open()) {
+        while (getline(myFile, line)) {
+            stringstream ss(line);
+
+            getline(ss, firstName, ',');
+            getline(ss, lastName, ',');
+            getline(ss, email, ',');
+            getline(ss, address, ',');
+            getline(ss, phoneNumber, ',');
+            getline(ss, password, ',');
+
+            if (fName != firstName && lName != lastName) {
+
+                tempFile << firstName << "," << lastName << "," << email << "," << address << "," << phoneNumber << "," << password << "," << endl;
+            }
+            else if (fName == firstName && lName == lastName) {
+                nameCheck = true;
+            }
+        }
+    }
+    myFile.close();
+    tempFile.close();
+
+    fstream testOutput;
+    myFile.open("test.csv", ios::out);
+    tempFile.open("test1.csv", ios::in);
+
+    while (getline(tempFile, line)) {
+        testOutput << line << endl;
+    }
+    testOutput.close();
+    tempFile.close();
+
+    if (nameCheck) {
+        cout << "Please enter your new account information: \n";
+
+        cout << "Enter first name: ";
+        cin >> firstName;
+
+        cout << "Enter last name: ";
+        cin >> lastName;
+
+        cout << "Enter email: ";
+        cin >> email;
+
+        cout << "Enter address: ";
+        cin >> address;
+
+        cout << "Enter phone number: ";
+        cin >> phoneNumber;
+
+        cout << "Enter password: ";
+        cin >> password;
+
+        myFile.open("test.csv", ios::app);
+        myFile << firstName << "," << lastName << "," << email << "," << address << "," << phoneNumber << "," << password << "," << endl;
+    }
+    else {
+        cout << "ERROR: account with that name does not exists\n";
+    }
+}
+
+
 //
 //Menu functions
 //
@@ -703,7 +790,7 @@ void AdminMenu() {
     }
 
     switch (input) {
-    case 'a': //Search all trip history
+    case 'a': UpdateUserDetails("customerDetails.csv"); //Search all trip history
         break;
 
     case 'b': ManageDriversMenu();
