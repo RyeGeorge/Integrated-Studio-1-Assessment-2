@@ -66,4 +66,5 @@ tripDetails – stores trip details
 lostProperty – stores lost property 
 foundProperty – stores found property
 driverComplaints - stores complaints made against drivers
+tempAccountDetails - temporarily holds account information for use in updating account information
 
