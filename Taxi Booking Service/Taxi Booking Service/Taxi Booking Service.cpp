@@ -122,9 +122,9 @@ int main()
     vector<Customer> customerFromFile;
     vector<Trip> trip;
     vector<Trip> tripFromFile;
-    //NewTrip(trip);
+    NewTrip(trip);
     vector<LostProperty> lProperty;
-    //ReportLostProperty(lProperty);
+    ReportLostProperty(lProperty);
 
 
     CompanyHeader();
@@ -941,7 +941,6 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
     return (trip);
 }
 
-/*
 vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Report lost property
     //Shaun Cooper
 
@@ -1005,4 +1004,3 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
 
     return (property);
 }
-*/
