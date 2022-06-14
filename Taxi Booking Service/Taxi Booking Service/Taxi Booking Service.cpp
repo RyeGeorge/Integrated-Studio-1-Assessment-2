@@ -76,19 +76,21 @@ struct Trip {
 
 struct LostProperty {
     string itemType;
+    string itemDescription;
     string identifyingFeature;
     float value;
 };
 
 struct FoundProperty {
     string itemType;
+    string itemDescription;
     string identifyingFeature;
-    float value;
 };
 
 vector <Customer> RegisterNewUser(vector<Customer>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
 vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
+vector <FoundProperty> ReportFoundProperty(vector<FoundProperty>& fProperty);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
@@ -107,6 +109,7 @@ void ViewCustomerDetails();
 void ViewDriverDetails();
 void PrintAccountDetails(string);
 void SearchAccountDetails(string);
+void SearchFoundProperty(vector<FoundProperty>& fPropertyFromFile);
 
 void CustomerMenu();
 void DriverMenu();
@@ -114,18 +117,19 @@ void AdminMenu();
 void ManageCustomersMenu();
 void ManageDriversMenu();
 
+vector<Customer> customer;
+vector<Customer> customerFromFile;
 vector<Trip> trip;
+vector<Trip> tripFromFile;
+vector<LostProperty> lProperty;
+vector<FoundProperty> fProperty;
+vector<FoundProperty> fPropertyFromFile;
 
 int main()
 {
-    vector<Customer> customer;
-    vector<Customer> customerFromFile;
-    vector<Trip> trip;
-    vector<Trip> tripFromFile;
-    //NewTrip(trip);
-    vector<LostProperty> lProperty;
-    ReportLostProperty(lProperty);
-
+    //ReportLostProperty(lProperty);
+    ReportFoundProperty(fProperty);
+    SearchFoundProperty(fPropertyFromFile);
 
     CompanyHeader();
 
@@ -227,7 +231,6 @@ void CompanyHeader() {
 };
 
 
-//registerNewUser to take user input
 vector <Customer> RegisterNewUser(vector<Customer>& customer) {
 
     // Shaun Cooper
@@ -583,6 +586,121 @@ void PrintAccountDetails(string fileName) {
 }
 
 
+void UpdateUserDetails(string fileName) {
+
+    //Rye George
+
+    fstream myFile;
+    fstream tempFile;
+
+    string line, email, pass, password;
+    Customer customerInfo;
+
+    bool nameCheck = false;
+
+    cout << "To Update your accout details please confirm your name: \n";
+
+    cout << "Enter your email: ";
+    cin >> email;
+
+    cout << "Enter your password: ";
+    cin >> pass;
+    cout << endl;
+
+
+    tempFile.open("tempAccountDetails.csv", ios::out);
+
+    myFile.open(fileName, ios::in);
+    if (myFile.is_open()) {
+        while (getline(myFile, line)) {
+            stringstream ss(line);
+
+            getline(ss, customerInfo.firstName, ',');
+            getline(ss, customerInfo.lastName, ',');
+            getline(ss, customerInfo.emailAddress, ',');
+            getline(ss, customerInfo.homeAddress, ',');
+            getline(ss, customerInfo.phoneNumber, ',');
+            getline(ss, password, ',');
+
+            if (customerInfo.emailAddress != email && password != pass) { //If the line has the account registered with the same email and password
+
+                //Copy accoutDetails into tempFile
+                tempFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << password << "," << endl;
+            }
+            else if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
+                nameCheck = true;
+            }
+        }
+    }
+
+
+    if (nameCheck) {
+
+        myFile.close();
+        tempFile.close();
+
+        myFile.open(fileName, ios::out);
+        tempFile.open("tempAccountDetails.csv", ios::in);
+
+        while (getline(tempFile, line)) { //Copies contents of tempFile into main file
+            myFile << line << endl;
+        }
+        myFile.close();
+        tempFile.close();
+
+        cout << "Please enter your new account information: \n";
+
+        cout << "Enter first name: ";
+        cin >> customerInfo.firstName;
+
+        cout << "Enter last name: ";
+        cin >> customerInfo.lastName;
+
+        cout << "Enter email: ";
+        cin >> customerInfo.emailAddress;
+
+        cout << "Enter address: ";
+        cin >> customerInfo.homeAddress;
+
+        cout << "Enter phone number: ";
+        cin >> customerInfo.phoneNumber;
+
+        char pw[20];
+
+        //Check password
+        int length = strlen(pw);
+        while (1) {
+            cout << "\nPlease enter a password which should contain :" << endl;
+            cout << " * at least 8 characters" << endl;
+            cout << " * at least one upper and lowercase letter " << endl;
+            cout << " * at least one digit " << endl;
+            cout << "Enter password: ";
+            do {  
+                cin.getline(pw, 20);
+                length = strlen(pw);
+            } while (length < 8);
+            if (CheckPassword(pw)) //if return 1 pass below
+                continue;
+            if (Re_enterPassword(pw))
+                continue;
+
+            break;
+        }
+
+        //Adding new account details into file
+        myFile.open(fileName, ios::app);
+        myFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << pw << "," << endl;
+    }
+    else {
+        cout << "ERROR: account with that name does not exists\n";
+    }
+}
+
+
+void DeleteCustomerAccount() {
+
+}
+
 //
 //Menu functions
 //
@@ -837,58 +955,222 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
     cout << "--------------------------" << endl;
 
     LostProperty m;
-    cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
-    cout << "Please choose one of the following options:\n";
-    cout << "a) Clothing\n";
-    cout << "b) Wallet\n";
-    cout << "c) Mobile Phone\n";
-    cout << "d) Bag\n";
-    cout << "e) Other accesory\n";
-    cout << "f) Other\n";
+    char loop = 'y';
+    while (loop == 'y'){
+        cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
+        cout << "Please choose one of the following options:\n";
+        cout << "a) Clothing\n";
+        cout << "b) Wallet\n";
+        cout << "c) Mobile Phone\n";
+        cout << "d) Bag\n";
+        cout << "e) Other accesory\n";
+        cout << "f) Other\n";
 
-    char input;
-    cin >> input;
-
-    while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
-        CheckInput(input);
+        char input;
         cin >> input;
+
+        while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
+            CheckInput(input);
+            cin >> input;
+            cout << endl;
+        }
+
+        switch (input) { //Switch to describe the item type
+        case 'a': m.itemType = "Clothing";
+            break;
+
+        case 'b': m.itemType = "Wallet";
+            break;
+
+        case 'c': m.itemType = "Mobile Phone";
+            break;
+
+        case 'd': m.itemType = "Bag";
+            break;
+
+        case 'e': m.itemType = "Other accessory";
+            break;
+
+        case 'f': m.itemType = "Other";
+            break;
+        }
+
+        cin.ignore();
+        cout << "\nDescribe the item: ";
+        getline(cin, m.itemDescription);
+        cout << "\nDescribe any identifying features: ";
+        getline(cin, m.identifyingFeature);
+        cout << "Enter the property value: $";
+        cin >> m.value;
+
+        lProperty.push_back(m);
+
+        //Write trip details to database
+        int i;
+        fstream myFile("lostProperty.csv", ios::app);
+        for (i = 0; i < lProperty.size(); i++) {
+            myFile << lProperty[i].itemType << "," << lProperty[i].itemDescription << "," << lProperty[i].identifyingFeature << "," << lProperty[i].value << endl;
+        }
+        myFile.close();
+
+        cout << "\nYour report has been submitted." << endl;
+
+        cout << "\nWould you like to enter another lost property? (y/n): ";
+        cin >> loop;
         cout << endl;
     }
 
-    switch (input) { //Switch to describe the item type
-    case 'a': m.itemType = "Clothing";
-        break;
+    return (lProperty);
+}
 
-    case 'b': m.itemType = "Wallet";
-        break;
+vector <FoundProperty> ReportFoundProperty(vector<FoundProperty>& fProperty) {
+    //Shaun Cooper
 
-    case 'c': m.itemType = "Mobile Phone";
-        break;
+    cout << "--------------------------" << endl;
+    cout << "   Report Found Property  " << endl;
+    cout << "--------------------------" << endl;
 
-    case 'd': m.itemType = "Bag";
-        break;
+    FoundProperty m;
+    char loop = 'y';
+    while (loop == 'y') {
+        cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
+        cout << "Please choose one of the following options:\n";
+        cout << "a) Clothing\n";
+        cout << "b) Wallet\n";
+        cout << "c) Mobile Phone\n";
+        cout << "d) Bag\n";
+        cout << "e) Other accesory\n";
+        cout << "f) Other\n";
 
-    case 'e': m.itemType = "Other accessory";
-        break;
+        char input;
+        cin >> input;
 
-    case 'f': m.itemType = "Other";
-        break;
+        while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
+            CheckInput(input);
+            cin >> input;
+            cout << endl;
+        }
+
+        switch (input) { //Switch to describe the item type
+        case 'a': m.itemType = "Clothing";
+            break;
+
+        case 'b': m.itemType = "Wallet";
+            break;
+
+        case 'c': m.itemType = "Mobile Phone";
+            break;
+
+        case 'd': m.itemType = "Bag";
+            break;
+
+        case 'e': m.itemType = "Other accessory";
+            break;
+
+        case 'f': m.itemType = "Other";
+            break;
+        }
+
+        cin.ignore();
+        cout << "\nDescribe the item: ";
+        getline(cin, m.itemDescription);
+        cout << "\nDescribe any identifying features: ";
+        getline(cin, m.identifyingFeature);
+
+        fProperty.push_back(m);
+
+        //Write trip details to database
+        int i;
+        fstream myFile("foundProperty.csv", ios::app);
+        for (i = 0; i < fProperty.size(); i++) {
+            myFile << fProperty[i].itemType << "," << fProperty[i].itemDescription << "," << fProperty[i].identifyingFeature << endl;
+        }
+        myFile.close();
+
+        cout << "\nYour report has been submitted." << endl;
+
+        cout << "\nWould you like to enter another found property? (y/n): ";
+        cin >> loop;
+        cout << endl;
+    }
+    return (fProperty);
+}
+
+void SearchFoundProperty(vector<FoundProperty>& fPropertyFromFile) {
+    //Shaun Cooper
+
+    cout << "--------------------------" << endl;
+    cout << "   Search Found Property  " << endl;
+    cout << "--------------------------" << endl;
+
+    //open file to search not append
+    fstream myFile("foundProperty.csv", ios::out);
+    cout << "\nSize= " << fPropertyFromFile.size();
+
+    //FoundProperty m;
+    string searchItemType, searchItemDescription, searchIdentifyingFeature;
+    char loop = 'y';
+    while (loop == 'y') {
+        cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
+        cout << "Please choose one of the following options:\n";
+        cout << "a) Clothing\n";
+        cout << "b) Wallet\n";
+        cout << "c) Mobile Phone\n";
+        cout << "d) Bag\n";
+        cout << "e) Other accesory\n";
+        cout << "f) Other\n";
+
+        char input;
+        cin >> input;
+
+        while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
+            CheckInput(input);
+            cin >> input;
+            cout << endl;
+        }
+
+        switch (input) { //Switch to describe the item type
+        case 'a': searchItemType = "Clothing";
+            break;
+
+        case 'b': searchItemType = "Wallet";
+            break;
+
+        case 'c': searchItemType = "Mobile Phone";
+            break;
+
+        case 'd': searchItemType = "Bag";
+            break;
+
+        case 'e': searchItemType = "Other accessory";
+            break;
+
+        case 'f': searchItemType = "Other";
+            break;
+        }
+
+        for (int i = 0; i < fPropertyFromFile.size(); i++) {
+            if (fPropertyFromFile[i].itemType == searchItemType) {
+                cout << "\nWe have a match for the item type." << endl;
+                cin.ignore();
+                cout << "\nPlease describe the item: ";
+                getline(cin, searchItemDescription);
+            }
+            else {
+                cout << "\nSorry there are no items matching that description.";
+                break;
+            }
+        }
+        cout << "\nWould you like to search again? (y/n): ";
+        cin >> loop;
+        cout << endl;
     }
 
-    cout << "\nDescribe any identifying features: ";
-    getline(cin, m.identifyingFeature);
-    cout << "Enter the property value: $";
-    cin >> m.value;
+        //cin.ignore();
+        //cout << "\nDescribe the item: ";
+        //getline(cin, m.itemDescription);
+        //cout << "\nDescribe any identifying features: ";
+        //getline(cin, m.identifyingFeature);
 
-    property.push_back(m);
-
-    //Write trip details to database
-    int i;
-    fstream myFile("lostProperty.csv", ios::app);
-    for (i = 0; i < property.size(); i++) {
-        myFile << property[i].itemType << "," << property[i].identifyingFeature << "," << property[i].value << endl;
-    }
-    myFile.close();
-
-    return (property);
+        //fProperty.push_back(m);
 }
