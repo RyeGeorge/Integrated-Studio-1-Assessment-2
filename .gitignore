@@ -4,3 +4,11 @@ $ git config --global core.excludesFile ~/.gitignore
 # ignore all suo and db
 *.suo
 *.db
+
+
+*.ilk
+*.log
+*.obj
+*.idb
+*.pdb
+*.exe
