@@ -6,9 +6,4 @@ $ git config --global core.excludesFile ~/.gitignore
 *.db
 
 
-*.ilk
-*.log
-*.obj
-*.idb
-*.pdb
-*.exe
+/Debug
