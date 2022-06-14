@@ -586,6 +586,121 @@ void PrintAccountDetails(string fileName) {
 }
 
 
+void UpdateUserDetails(string fileName) {
+
+    //Rye George
+
+    fstream myFile;
+    fstream tempFile;
+
+    string line, email, pass, password;
+    Customer customerInfo;
+
+    bool nameCheck = false;
+
+    cout << "To Update your accout details please confirm your name: \n";
+
+    cout << "Enter your email: ";
+    cin >> email;
+
+    cout << "Enter your password: ";
+    cin >> pass;
+    cout << endl;
+
+
+    tempFile.open("tempAccountDetails.csv", ios::out);
+
+    myFile.open(fileName, ios::in);
+    if (myFile.is_open()) {
+        while (getline(myFile, line)) {
+            stringstream ss(line);
+
+            getline(ss, customerInfo.firstName, ',');
+            getline(ss, customerInfo.lastName, ',');
+            getline(ss, customerInfo.emailAddress, ',');
+            getline(ss, customerInfo.homeAddress, ',');
+            getline(ss, customerInfo.phoneNumber, ',');
+            getline(ss, password, ',');
+
+            if (customerInfo.emailAddress != email && password != pass) { //If the line has the account registered with the same email and password
+
+                //Copy accoutDetails into tempFile
+                tempFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << password << "," << endl;
+            }
+            else if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
+                nameCheck = true;
+            }
+        }
+    }
+
+
+    if (nameCheck) {
+
+        myFile.close();
+        tempFile.close();
+
+        myFile.open(fileName, ios::out);
+        tempFile.open("tempAccountDetails.csv", ios::in);
+
+        while (getline(tempFile, line)) { //Copies contents of tempFile into main file
+            myFile << line << endl;
+        }
+        myFile.close();
+        tempFile.close();
+
+        cout << "Please enter your new account information: \n";
+
+        cout << "Enter first name: ";
+        cin >> customerInfo.firstName;
+
+        cout << "Enter last name: ";
+        cin >> customerInfo.lastName;
+
+        cout << "Enter email: ";
+        cin >> customerInfo.emailAddress;
+
+        cout << "Enter address: ";
+        cin >> customerInfo.homeAddress;
+
+        cout << "Enter phone number: ";
+        cin >> customerInfo.phoneNumber;
+
+        char pw[20];
+
+        //Check password
+        int length = strlen(pw);
+        while (1) {
+            cout << "\nPlease enter a password which should contain :" << endl;
+            cout << " * at least 8 characters" << endl;
+            cout << " * at least one upper and lowercase letter " << endl;
+            cout << " * at least one digit " << endl;
+            cout << "Enter password: ";
+            do {  
+                cin.getline(pw, 20);
+                length = strlen(pw);
+            } while (length < 8);
+            if (CheckPassword(pw)) //if return 1 pass below
+                continue;
+            if (Re_enterPassword(pw))
+                continue;
+
+            break;
+        }
+
+        //Adding new account details into file
+        myFile.open(fileName, ios::app);
+        myFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << pw << "," << endl;
+    }
+    else {
+        cout << "ERROR: account with that name does not exists\n";
+    }
+}
+
+
+void DeleteCustomerAccount() {
+
+}
+
 //
 //Menu functions
 //
