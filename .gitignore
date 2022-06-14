@@ -4,3 +4,6 @@ $ git config --global core.excludesFile ~/.gitignore
 # ignore all suo and db
 *.suo
 *.db
+
+
+/Debug
