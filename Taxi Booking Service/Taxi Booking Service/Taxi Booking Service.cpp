@@ -88,7 +88,7 @@ struct FoundProperty {
 
 vector <Customer> RegisterNewCustomer(vector<Customer>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
-//vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
+vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
@@ -694,6 +694,11 @@ void UpdateUserDetails(string fileName) {
     else {
         cout << "ERROR: account with that name does not exists\n";
     }
+}
+
+
+void DeleteCustomerAccount() {
+
 }
 
 
