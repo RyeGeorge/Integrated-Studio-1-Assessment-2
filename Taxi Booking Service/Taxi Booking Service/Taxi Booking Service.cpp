@@ -86,9 +86,9 @@ struct FoundProperty {
     float value;
 };
 
-vector <Customer> RegisterNewUser(vector<Customer>& customer);
+vector <Customer> RegisterNewCustomer(vector<Customer>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
-vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
+//vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
@@ -122,9 +122,9 @@ int main()
     vector<Customer> customerFromFile;
     vector<Trip> trip;
     vector<Trip> tripFromFile;
-    NewTrip(trip);
+    //NewTrip(trip);
     vector<LostProperty> lProperty;
-    ReportLostProperty(lProperty);
+    //ReportLostProperty(lProperty);
 
 
     CompanyHeader();
@@ -150,7 +150,7 @@ int main()
     case 'a': AdminMenu(); //Login();
         break;
 
-    case 'b': //RegisterNewUser();
+    case 'b': RegisterNewCustomer(customer);
         break;
 
     case 'c': break;
@@ -228,7 +228,7 @@ void CompanyHeader() {
 
 
 //registerNewUser to take user input
-vector <Customer> RegisterNewUser(vector<Customer>& customer) {
+vector <Customer> RegisterNewCustomer(vector<Customer>& customer) {
 
     // Shaun Cooper
     CompanyHeader();
@@ -270,8 +270,10 @@ vector <Customer> RegisterNewUser(vector<Customer>& customer) {
 
     customer.push_back(m);
 
-    cout << "\ntest output: " << m.firstName << ", " << m.lastName << ", " << m.emailAddress << ", " << m.homeAddress << ", " << m.phoneNumber << ", " << m.password;
-    cout << endl;
+    fstream myFile;
+    myFile.open("customerDetails.csv", ios::app);
+
+    myFile << m.firstName << "," << m.lastName << "," << m.emailAddress << "," << m.homeAddress << "," << m.phoneNumber << "," << m.password << "," << endl;
     //outputDetails(customer);
 
     return (customer);
@@ -585,83 +587,108 @@ void PrintAccountDetails(string fileName) {
 
 void UpdateUserDetails(string fileName) {
 
+    //Rye George
+
     fstream myFile;
     fstream tempFile;
 
-    string line;
-    string fName, lName;
-    string firstName, lastName, email, address, phoneNumber, password;
+    string line, email, pass, password;
+    Customer customerInfo;
+
     bool nameCheck = false;
 
     cout << "To Update your accout details please confirm your name: \n";
 
-    cout << "Enter your first name: ";
-    cin >> fName;
+    cout << "Enter your email: ";
+    cin >> email;
 
-    cout << "Enter your last name: ";
-    cin >> lName;
+    cout << "Enter your password: ";
+    cin >> pass;
     cout << endl;
 
 
-    tempFile.open("test1.csv", ios::out);
+    tempFile.open("tempAccountDetails.csv", ios::out);
 
-    myFile.open("test.csv", ios::in);
+    myFile.open(fileName, ios::in);
     if (myFile.is_open()) {
         while (getline(myFile, line)) {
             stringstream ss(line);
 
-            getline(ss, firstName, ',');
-            getline(ss, lastName, ',');
-            getline(ss, email, ',');
-            getline(ss, address, ',');
-            getline(ss, phoneNumber, ',');
+            getline(ss, customerInfo.firstName, ',');
+            getline(ss, customerInfo.lastName, ',');
+            getline(ss, customerInfo.emailAddress, ',');
+            getline(ss, customerInfo.homeAddress, ',');
+            getline(ss, customerInfo.phoneNumber, ',');
             getline(ss, password, ',');
 
-            if (fName != firstName && lName != lastName) {
+            if (customerInfo.emailAddress != email && password != pass) { //If the line has the account registered with the same email and password
 
-                tempFile << firstName << "," << lastName << "," << email << "," << address << "," << phoneNumber << "," << password << "," << endl;
+                //Copy accoutDetails into tempFile
+                tempFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << password << "," << endl;
             }
-            else if (fName == firstName && lName == lastName) {
+            else if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
                 nameCheck = true;
             }
         }
     }
-    myFile.close();
-    tempFile.close();
 
-    fstream testOutput;
-    myFile.open("test.csv", ios::out);
-    tempFile.open("test1.csv", ios::in);
-
-    while (getline(tempFile, line)) {
-        testOutput << line << endl;
-    }
-    testOutput.close();
-    tempFile.close();
 
     if (nameCheck) {
+
+        myFile.close();
+        tempFile.close();
+
+        myFile.open(fileName, ios::out);
+        tempFile.open("tempAccountDetails.csv", ios::in);
+
+        while (getline(tempFile, line)) { //Copies contents of tempFile into main file
+            myFile << line << endl;
+        }
+        myFile.close();
+        tempFile.close();
+
         cout << "Please enter your new account information: \n";
 
         cout << "Enter first name: ";
-        cin >> firstName;
+        cin >> customerInfo.firstName;
 
         cout << "Enter last name: ";
-        cin >> lastName;
+        cin >> customerInfo.lastName;
 
         cout << "Enter email: ";
-        cin >> email;
+        cin >> customerInfo.emailAddress;
 
         cout << "Enter address: ";
-        cin >> address;
+        cin >> customerInfo.homeAddress;
 
         cout << "Enter phone number: ";
-        cin >> phoneNumber;
+        cin >> customerInfo.phoneNumber;
 
-        cout << "Enter password: ";
-        cin >> password;
+        char pw[20];
 
-        myFile.open("test.csv", ios::app);
-        myFile << firstName << "," << lastName << "," << email << "," << address << "," << phoneNumber << "," << password << "," << endl;
+        //Check password
+        int length = strlen(pw);
+        while (1) {
+            cout << "\nPlease enter a password which should contain :" << endl;
+            cout << " * at least 8 characters" << endl;
+            cout << " * at least one upper and lowercase letter " << endl;
+            cout << " * at least one digit " << endl;
+            cout << "Enter password: ";
+            do {  
+                cin.getline(pw, 20);
+                length = strlen(pw);
+            } while (length < 8);
+            if (CheckPassword(pw)) //if return 1 pass below
+                continue;
+            if (Re_enterPassword(pw))
+                continue;
+
+            break;
+        }
+
+        //Adding new account details into file
+        myFile.open(fileName, ios::app);
+        myFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << pw << "," << endl;
     }
     else {
         cout << "ERROR: account with that name does not exists\n";
@@ -914,6 +941,7 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
     return (trip);
 }
 
+/*
 vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Report lost property
     //Shaun Cooper
 
@@ -977,3 +1005,4 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
 
     return (property);
 }
+*/
