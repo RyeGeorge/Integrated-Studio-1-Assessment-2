@@ -57,12 +57,21 @@ struct Trip
     bool tripCompleted;
 
 
+struct CarDetails
+    firstName
+    lastName
+    licensePlate
+    vehicalMake
+    vehicalModel
+
+
 FILES
 
 customerDetails – stores customer details 
 driverDetails – stores driver details
 adminDetails – stores admin details 
 tripDetails – stores trip details 
+carDetails - stores car details
 lostProperty – stores lost property 
 foundProperty – stores found property
 driverComplaints - stores complaints made against drivers
