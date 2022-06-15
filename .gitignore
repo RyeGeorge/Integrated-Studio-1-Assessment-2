@@ -6,4 +6,4 @@ $ git config --global core.excludesFile ~/.gitignore
 *.db
 
 
-/Debug
+Debug/
