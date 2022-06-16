@@ -128,7 +128,7 @@ vector<FoundProperty> fPropertyFromFile;
 
 int main()
 {
-    
+
     CompanyHeader();
 
     cout << "Please choose one of the following options:\n";
@@ -673,7 +673,7 @@ void UpdateUserDetails(string fileName) {
             cout << " * at least one upper and lowercase letter " << endl;
             cout << " * at least one digit " << endl;
             cout << "Enter password: ";
-            do {  
+            do {
                 cin.getline(pw, 20);
                 length = strlen(pw);
             } while (length < 8);
@@ -954,7 +954,7 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
 
     LostProperty m;
     char loop = 'y';
-    while (loop == 'y'){
+    while (loop == 'y') {
         cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
         cout << "Please choose one of the following options:\n";
         cout << "a) Clothing\n";
@@ -1075,7 +1075,7 @@ vector <FoundProperty> ReportFoundProperty(vector<FoundProperty>& fProperty) {
 
         fProperty.push_back(m);
         //test the input stored in structure
-        cout << "item type is: " << m.itemType<<endl;
+        cout << "item type is: " << m.itemType << endl;
         cout << "item description is: " << m.itemDescription << endl;
         cout << "identifying features are: " << m.identifyingFeature << endl;
 
@@ -1130,13 +1130,13 @@ vector<FoundProperty> DisplayFoundProperty() {
     cout << endl;
 
     char answer = 'y';
-    while (tolower(answer) == 'y'){
+    while (tolower(answer) == 'y') {
         cout << "When you have finished reviewing the items, press any key then enter to exit.";
         cin >> answer;
     }
-   
+
     cout << endl;
-    return(tempProperty);     
+    return(tempProperty);
 }
 
 vector<LostProperty> DisplayLostProperty() {
