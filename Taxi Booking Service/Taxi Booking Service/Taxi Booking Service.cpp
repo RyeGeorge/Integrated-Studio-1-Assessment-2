@@ -91,6 +91,8 @@ vector <Customer> RegisterNewUser(vector<Customer>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
 vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty);
 vector <FoundProperty> ReportFoundProperty(vector<FoundProperty>& fProperty);
+vector<LostProperty> DisplayLostProperty();
+vector<FoundProperty> DisplayFoundProperty();
 void WriteToFile(vector<Customer>& customer);
 void OutputDetails(vector<Customer>& customer);
 
@@ -1014,9 +1016,7 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
         getline(cin, m.itemDescription);
         cout << "\nDescribe any identifying features: ";
         getline(cin, m.identifyingFeature);
-        cout << "Enter the property value: $";
-        cin >> m.value;
-
+       
         lProperty.push_back(m);
 
         //Write trip details to database
@@ -1110,81 +1110,86 @@ vector <FoundProperty> ReportFoundProperty(vector<FoundProperty>& fProperty) {
     return (fProperty);
 }
 
-void SearchFoundProperty(vector<FoundProperty>& fPropertyFromFile) {
+vector<FoundProperty> DisplayFoundProperty() {
     //Shaun Cooper
 
     cout << "--------------------------" << endl;
-    cout << "   Search Found Property  " << endl;
+    cout << "  Display Found Property  " << endl;
     cout << "--------------------------" << endl;
 
+    cout << "\nBelow is a list of all the found property on file:\n";
     //open file to search not append
-    fstream myFile("foundProperty.csv", ios::out);
-    cout << "\nSize= " << fPropertyFromFile.size();
+    fstream myFile("foundProperty.csv", ios::in);
+    vector<FoundProperty>tempProperty;
 
-    //FoundProperty m;
+    FoundProperty m;
     string searchItemType, searchItemDescription, searchIdentifyingFeature;
-    char loop = 'y';
-    while (loop == 'y') {
-        cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
-        cout << "Please choose one of the following options:\n";
-        cout << "a) Clothing\n";
-        cout << "b) Wallet\n";
-        cout << "c) Mobile Phone\n";
-        cout << "d) Bag\n";
-        cout << "e) Other accesory\n";
-        cout << "f) Other\n";
 
-        char input;
-        cin >> input;
+    string line;
+    while (getline(myFile, line)) {
+        cout << line << endl;
+        istringstream linestream(line);//to split the row into coloumns/properties
+        string item;
+        //until the appearance of comma, everything is stored in item
+        getline(linestream, item, ',');
+        m.itemType = item;
+        getline(linestream, item, ',');
+        m.itemDescription = item;
+        getline(linestream, item, ',');
+        m.identifyingFeature = item;
 
-        while (input != 'a' && input != 'b' && input != 'c' && input != 'd' && input != 'e' && input != 'f') { //Validates if input is an acceptable value
-            CheckInput(input);
-            cin >> input;
-            cout << endl;
-        }
+        tempProperty.push_back(m);
+    }
+    myFile.close();
+    cout << endl;
 
-        switch (input) { //Switch to describe the item type
-        case 'a': searchItemType = "Clothing";
-            break;
-
-        case 'b': searchItemType = "Wallet";
-            break;
-
-        case 'c': searchItemType = "Mobile Phone";
-            break;
-
-        case 'd': searchItemType = "Bag";
-            break;
-
-        case 'e': searchItemType = "Other accessory";
-            break;
-
-        case 'f': searchItemType = "Other";
-            break;
-        }
-
-        for (int i = 0; i < fPropertyFromFile.size(); i++) {
-            if (fPropertyFromFile[i].itemType == searchItemType) {
-                cout << "\nWe have a match for the item type." << endl;
-                cin.ignore();
-                cout << "\nPlease describe the item: ";
-                getline(cin, searchItemDescription);
-            }
-            else {
-                cout << "\nSorry there are no items matching that description.";
-                break;
-            }
-        }
-        cout << "\nWould you like to search again? (y/n): ";
-        cin >> loop;
-        cout << endl;
+    char answer = 'y';
+    while (tolower(answer) == 'y') {
+        cout << "When you have finished reviewing the items, press any key then enter to exit.";
+        cin >> answer;
     }
 
-        //cin.ignore();
-        //cout << "\nDescribe the item: ";
-        //getline(cin, m.itemDescription);
-        //cout << "\nDescribe any identifying features: ";
-        //getline(cin, m.identifyingFeature);
+    cout << endl;
+    return(tempProperty);
+}
 
-        //fProperty.push_back(m);
+vector<LostProperty> DisplayLostProperty() {
+    //Shaun Cooper
+
+    cout << "--------------------------" << endl;
+    cout << "   Display Lost Property  " << endl;
+    cout << "--------------------------" << endl;
+
+    cout << "\nBelow is a list of all the lost property on file:\n";
+    //open file to search not append
+    fstream myFile("lostProperty.csv", ios::in);
+    vector<LostProperty>tempProperty;
+
+    LostProperty m;
+    string line;
+    while (getline(myFile, line)) {
+        cout << line << endl;
+        istringstream linestream(line);//to split the row into coloumns/properties
+        string item;
+        //until the appearance of comma, everything is stored in item
+        getline(linestream, item, ',');
+        m.itemType = item;
+        getline(linestream, item, ',');
+        m.itemDescription = item;
+        getline(linestream, item, ',');
+        m.identifyingFeature = item;
+
+        tempProperty.push_back(m);
+    }
+    myFile.close();
+    cout << endl;
+
+    char answer = 'y';
+    while (tolower(answer) == 'y') {
+        cout << "When you have finished reviewing the items, press any key then enter to exit.";
+        cin >> answer;
+    }
+
+    cout << endl;
+    return(tempProperty);
 }
