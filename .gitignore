@@ -7,3 +7,4 @@ $ git config --global core.excludesFile ~/.gitignore
 
 
 Debug/
+x64/Debug/
