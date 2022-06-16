@@ -5,6 +5,4 @@ $ git config --global core.excludesFile ~/.gitignore
 *.suo
 *.db
 
-
 Debug/
-x64/Debug/
