@@ -130,9 +130,6 @@ vector<FoundProperty> fPropertyFromFile;
 
 int main()
 {
-    ReportLostProperty(lProperty);
-    ReportFoundProperty(fProperty);
-    SearchFoundProperty(fPropertyFromFile);
 
     CompanyHeader();
 
@@ -972,7 +969,7 @@ vector <LostProperty> ReportLostProperty(vector<LostProperty>& lProperty) { //Re
 
     LostProperty m;
     char loop = 'y';
-    while (loop == 'y'){
+    while (loop == 'y') {
         cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
         cout << "Please choose one of the following options:\n";
         cout << "a) Clothing\n";
