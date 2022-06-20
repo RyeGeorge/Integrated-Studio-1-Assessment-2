@@ -8,7 +8,7 @@
 using namespace std;
 
 //Data structures
-struct Customer {
+struct User {
     string firstName;
     string lastName;
     string emailAddress;
@@ -16,7 +16,7 @@ struct Customer {
     string homeAddress;
     char password[20];
 
-    Customer() {  //Default Constructor
+    User() {  //Default Constructor
         firstName = "firstName";
         lastName = "lastName";
         emailAddress = "emailAddress";
@@ -25,28 +25,6 @@ struct Customer {
     }
 };
 
-struct Driver {
-    string firstName;
-    string lastName;
-    string emailAddress;
-    string phoneNumber;
-    string homeAddress;
-    string licensePlate;
-    string vehicleMake;
-    string vehicleModel;
-    char password[20];
-
-    Driver() {
-        firstName = "firstName";
-        lastName = "lastName";
-        emailAddress = "emailAddress";
-        phoneNumber = "phoneNumber";
-        homeAddress = "homeAddress";
-        licensePlate = "licensePlate";
-        vehicleMake = "vehicleMake";
-        vehicleModel = "vehicleModel";
-    }
-};
 
 struct Trip {
     string customerName;
@@ -89,18 +67,19 @@ struct Property {
     string identifyingFeature;
 };
 
-vector <Customer> RegisterNewUser(vector<Customer>& customer);
+vector <User> RegisterNewUser(vector<User>& customer);
 vector <Trip> NewTrip(vector<Trip>& trip);
 vector <Trip> YourTripHistory();
 void ReportProperty(string fileName, string type);
 vector<Property> DisplayProperty(string fileName, string type);
-void WriteToFile(vector<Customer>& customer);
-void OutputDetails(vector<Customer>& customer);
+void WriteToFile(vector<User>& customer);
+void OutputDetails(vector<User>& customer);
 
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
 
 void Login();
+bool LoginLoop(string, string, string);
 bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
@@ -114,21 +93,26 @@ void PrintCarDetails();
 void SearchCarDetails();
 
 void ViewCustomerDetails();
-void UpdateCustomerDetails();
+void UpdateAccountDetails(string);
 void ViewDriverDetails();
 void PrintAccountDetails(string);
 void SearchAccountDetails(string);
+void DeleteAccount(string, string, string);
 
-void CustomerMenu();
+void CustomerMenu(string, string);
 void DriverMenu();
 void AdminMenu();
 void ManageCustomersMenu();
 void ManageDriversMenu();
 
-vector<Customer> customer;
-vector<Customer> customerFromFile;
+vector<User> customer;
+vector<User> customerFromFile;
 vector<Trip> trip;
 vector<Trip> tripFromFile;
+
+//Keeps track of current account the user is logged into
+string currentPassword;
+string currentEmail;
 
 int main()
 {
@@ -155,10 +139,10 @@ int main()
     cin.ignore(100, '\n');
 
     switch (input) {
-    case 'a': DisplayCarDetails(); //Login(); //AdminMenu(); 
+    case 'a': Login(); //AdminMenu(); 
         break;
 
-    case 'b': RegisterCar(); //RegisterNewUser(customer);
+    case 'b': RegisterNewUser(customer);
         break;
 
     case 'c': break;
@@ -174,7 +158,7 @@ void Login() {
     CompanyHeader();
 
     cout << "                Login Menu                   \n";
-
+    
     string tempEmail;
     string tempPassword;
 
@@ -194,25 +178,36 @@ void Login() {
 
 
     switch (input) {
-    case 'a':
-        for (int i = 3; i > 0; i--) {
+    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { CustomerMenu(currentPassword, currentEmail); }
+            break;
 
-            cout << "Enter your Email: ";
-            cin >> tempEmail;
+    case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { DriverMenu(); }//pass then email
+            break;
 
-            cout << "\nEnter your password: ";
-            cin >> tempPassword;
-
-            if (ReadFromLoginFile("customerDetails.csv", tempPassword, tempEmail)) {
-                CustomerMenu();
-                break;
-            }
-
-            cout << "\nPassword or Email are incorrect, you have " << i - 1 << " attemps left\n\n\n";
-        }
-        break;
+    case 'c': if (LoginLoop("adminDetails.csv", tempPassword, tempEmail)) { AdminMenu(); }//Pass then email
+            break;
     }
 
+}
+
+bool LoginLoop(string file, string password, string email) {
+    for (int i = 3; i > 0; i--) {
+
+        cout << "Enter your Email: ";
+        cin >> email;
+
+        cout << "\nEnter your password: ";
+        cin >> password;
+
+        if (ReadFromLoginFile(file, password, email)) {
+            currentPassword = password;
+            currentEmail = email;
+            return true;
+            break;
+        }
+
+        cout << "\nPassword or Email are incorrect, you have " << i - 1 << " attemps left\n\n\n";
+    }
 }
 
 void CheckInput(char input) {
@@ -235,14 +230,14 @@ void CompanyHeader() {
 };
 
 
-vector <Customer> RegisterNewUser(vector<Customer>& customer) {
+vector <User> RegisterNewUser(vector<User>& customer) {
     // Shaun Cooper
 
     cout << "--------------------------" << endl;
     cout << "     Register New User    " << endl;
     cout << "--------------------------" << endl;
 
-    Customer m;//we receive one user data at any given time
+    User m;//we receive one user data at any given time
 
     cout << "\nPlease enter your First Name(s): ";
     getline(cin, m.firstName);
@@ -351,10 +346,10 @@ void RegisterCar() {
 
     cout << "\nTo register your vehical please enter the following details: \n";
 
-    cout << "Please enter your first name: ";
+    cout << "Please enter the first name registered to the vehical: ";
     cin >> firstName;
 
-    cout << "Please enter your last name: ";
+    cout << "Please enter the last name registered to the vehical: ";
     cin >> lastName;
 
     cout << "Please enter your license plate: ";
@@ -462,7 +457,7 @@ void SearchCarDetails() {
 }
 
 
-void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the output on the console
+void OutputDetails(vector<User>& customer) { //outputMarker to produce the output on the console
     //Shaun Cooper
 
     cout << "\nFrom outputDetails Function";
@@ -475,7 +470,7 @@ void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the o
 }
 
 
-void WriteToFile(vector<Customer>& customer) { //writeToFile function facilitates the storing of customer detials
+void WriteToFile(vector<User>& customer) { //writeToFile function facilitates the storing of customer detials
     //Shaun Cooper
 
     cout << "\nWriting to file ";
@@ -494,26 +489,25 @@ bool ReadFromLoginFile(string fileName, string pw, string e) {
     //Rye George
 
     fstream myFile;
-    Customer customerInfo;
 
     myFile.open(fileName, ios::in);
 
     if (myFile.is_open()) {
 
-        string line;
-        string password;
+        string line, password;
+        User userDetails;
 
         while (getline(myFile, line))
         {
             stringstream ss(line);
-            getline(ss, customerInfo.firstName, ',');
-            getline(ss, customerInfo.lastName, ',');
-            getline(ss, customerInfo.emailAddress, ',');
-            getline(ss, customerInfo.homeAddress, ',');
-            getline(ss, customerInfo.phoneNumber, ',');
+            getline(ss, userDetails.firstName, ',');
+            getline(ss, userDetails.lastName, ',');
+            getline(ss, userDetails.homeAddress, ',');
+            getline(ss, userDetails.emailAddress, ',');
+            getline(ss, userDetails.phoneNumber, ',');
             getline(ss, password, ',');
 
-            if ((password == pw) && (customerInfo.emailAddress == e))
+            if ((password == pw) && (userDetails.emailAddress == e))
                 return true;
         }
         myFile.close();
@@ -664,26 +658,27 @@ void SearchAccountDetails(string fileName) {
     if (myFile.is_open()) {
 
         string line;
-        string firstName, lastName, email, address, phoneNumber, password;
+        string password;
+        User userDetails;
 
         while (getline(myFile, line)) {
 
             stringstream ss(line);
 
-            getline(ss, firstName, ',');
-            getline(ss, lastName, ',');
-            getline(ss, email, ',');
-            getline(ss, address, ',');
-            getline(ss, phoneNumber, ',');
+            getline(ss, userDetails.firstName, ',');
+            getline(ss, userDetails.lastName, ',');
+            getline(ss, userDetails.homeAddress, ',');
+            getline(ss, userDetails.emailAddress, ',');
+            getline(ss, userDetails.phoneNumber, ',');
             getline(ss, password, ',');
 
-            if (firstName == fName && lastName == lName) {
-                cout << endl << firstName << " " << lastName << endl;
-                cout << "Email: \t\t" << email << "\nAddress: \t" << address << "\nPhoneNumber: \t" << phoneNumber << "\nPassword: \t" << password << endl;
+            if (userDetails.firstName == fName && userDetails.lastName == lName) {
+                cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
+                cout << "Email: \t\t" << userDetails.homeAddress << "\nAddress: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl;
                 break;
             }
         }
-        if (firstName != fName && lastName != lName)
+        if (userDetails.firstName != fName && userDetails.lastName != lName)
             cout << "\nERROR: Accout does not exist\n";
     }
 }
@@ -699,79 +694,76 @@ void PrintAccountDetails(string fileName) {
     if (myFile.is_open()) {
 
         string line;
-        string firstName, lastName, email, address, phoneNumber, password;
+        string password;
+        User userDetails;
 
         while (getline(myFile, line)) {
 
             stringstream ss(line);
 
-            getline(ss, firstName, ',');
-            getline(ss, lastName, ',');
-            getline(ss, email, ',');
-            getline(ss, address, ',');
-            getline(ss, phoneNumber, ',');
+            getline(ss, userDetails.firstName, ',');
+            getline(ss, userDetails.lastName, ',');
+            getline(ss, userDetails.homeAddress, ',');
+            getline(ss, userDetails.emailAddress, ',');
+            getline(ss, userDetails.phoneNumber, ',');
             getline(ss, password, ',');
 
-            cout << endl << firstName << " " << lastName << endl;
-            cout << "Email: \t\t" << email << "\nAddress: \t" << address << "\nPhoneNumber: \t" << phoneNumber << "\nPassword: \t" << password << endl << endl;
+            cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
+            cout << "Address: \t\t" << userDetails.homeAddress << "\Email: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl << endl;
         }
     }
 }
 
-void DeleteCustomerAccount() {
+void DeleteAccount(string fileName, string currentPass, string currentEmail) {
 
     //Rye George
 
     fstream myFile;
     fstream tempFile;
 
-    string line, email, pass, password;
-    Customer customerInfo;
+    string line, password;
+    string tempEmail, tempPass;
+    User userDetails;
 
     bool detailCheck = false;
 
-    cout << "Please confirm your account: \n";
-
-    cout << "Enter your email: ";
-    cin >> email;
-
-    cout << "Enter your password: ";
-    cin >> pass;
-    cout << endl;
-
+        cout << "Please confirm your email and password: \n\n";
+        cout << "Please enter your email: ";
+        cin >> tempEmail;
+        cout << "Please enter your password: ";
+        cin >> tempPass;
 
     tempFile.open("tempAccountDetails.csv", ios::out);
 
-    myFile.open("customerDetails.csv", ios::in);
+    myFile.open(fileName, ios::in);
     if (myFile.is_open()) {
         while (getline(myFile, line)) {
             stringstream ss(line);
 
-            getline(ss, customerInfo.firstName, ',');
-            getline(ss, customerInfo.lastName, ',');
-            getline(ss, customerInfo.emailAddress, ',');
-            getline(ss, customerInfo.homeAddress, ',');
-            getline(ss, customerInfo.phoneNumber, ',');
+            getline(ss, userDetails.firstName, ',');
+            getline(ss, userDetails.lastName, ',');
+            getline(ss, userDetails.homeAddress, ',');
+            getline(ss, userDetails.emailAddress, ',');
+            getline(ss, userDetails.phoneNumber, ',');
             getline(ss, password, ',');
 
-            if (customerInfo.emailAddress != email && password != pass) { //If the line has the account registered with the same email and password
+            if (userDetails.emailAddress != currentEmail && password != currentPass) { //If the line has the account registered with the same email and password
 
                 //Copy accoutDetails into tempFile
-                tempFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << password << "," << endl;
+                tempFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.emailAddress << "," << userDetails.homeAddress << "," << userDetails.phoneNumber << "," << password << "," << endl;
             }
-            else if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
+            else if (userDetails.emailAddress == currentEmail && password == currentPass) { //If the info the user enters matches with an existing account
                 detailCheck = true;
             }
         }
     }
-
 
     if (detailCheck) {
 
         myFile.close();
         tempFile.close();
 
-        myFile.open("customerDetails.csv", ios::out);
+        myFile.open(fileName, ios::out);
         tempFile.open("tempAccountDetails.csv", ios::in);
 
         while (getline(tempFile, line)) { //Copies contents of tempFile into main file
@@ -786,31 +778,31 @@ void DeleteCustomerAccount() {
 
 }
 
-void UpdateCustomerDetails() {
+void UpdateAccountDetails(string fileName) {
 
     //Rye George
 
-    Customer customerInfo;
+    User userDetails;
     fstream myFile;
 
-    DeleteCustomerAccount();
+    DeleteAccount(fileName, currentPassword, currentEmail);
 
     cout << "Please enter your new account information: \n";
 
     cout << "Enter first name: ";
-    cin >> customerInfo.firstName;
+    cin >> userDetails.firstName;
 
     cout << "Enter last name: ";
-    cin >> customerInfo.lastName;
+    cin >> userDetails.lastName;
 
     cout << "Enter email: ";
-    cin >> customerInfo.emailAddress;
+    cin >> userDetails.homeAddress;
 
     cout << "Enter address: ";
-    cin >> customerInfo.homeAddress;
+    cin >> userDetails.emailAddress;
 
     cout << "Enter phone number: ";
-    cin >> customerInfo.phoneNumber;
+    cin >> userDetails.phoneNumber;
 
     char pw[20];
 
@@ -836,7 +828,7 @@ void UpdateCustomerDetails() {
 
     //Adding new account details into file
     myFile.open("customerDetails.csv", ios::app);
-    myFile << customerInfo.firstName << "," << customerInfo.lastName << "," << customerInfo.emailAddress << "," << customerInfo.homeAddress << "," << customerInfo.phoneNumber << "," << pw << "," << endl;
+    myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
 
 }
 
@@ -846,7 +838,7 @@ void UpdateCustomerDetails() {
 //
 
 
-void CustomerMenu() {
+void CustomerMenu(string pass, string email) {
 
     // Rye George
 
@@ -878,7 +870,7 @@ void CustomerMenu() {
 
         break;
 
-    case 'b': UpdateCustomerDetails();
+    case 'b': UpdateAccountDetails("customerDetails.csv");
         break;
 
     case 'c': //Search trip history
@@ -890,7 +882,7 @@ void CustomerMenu() {
     case 'e': FileComplaint();
         break;
 
-    case 'f': DeleteCustomerAccount();
+    case 'f': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
 
     case 'g': break;
         break;
@@ -1012,7 +1004,7 @@ void ManageCustomersMenu() {
     case 'a': ViewCustomerDetails();
         break;
 
-    case 'b': cout << "Enter the details of the account you want to delete: \n";  DeleteCustomerAccount();
+    case 'b': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
         break;
 
     case 'c': break;
@@ -1218,7 +1210,7 @@ vector <Trip> YourTripHistory() {
     fstream tempFile;
 
     string line, email, pass, password;
-    Customer customerInfo;
+    User customerInfo;
 
     bool detailCheck = false;
     while (detailCheck == false){
