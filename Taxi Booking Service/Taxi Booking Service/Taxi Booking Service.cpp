@@ -51,6 +51,15 @@ struct Trip {
     }
 };
 
+struct CarDetails {
+    string firstName;
+    string lastName;
+    string licensePlate;
+    string vehicalMake;
+    string vehicalModel;
+};
+
+
 struct Property {
     string itemType;
     string itemDescription;
@@ -70,9 +79,14 @@ void Login();
 bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
+void RegisterCar();
 
 void FileComplaint();
 void DisplayComplaints();
+
+void DisplayCarDetails();
+void PrintCarDetails();
+void SearchCarDetails();
 
 void ViewCustomerDetails();
 void UpdateCustomerDetails();
@@ -110,7 +124,7 @@ int main()
     cin.ignore(100, '\n');
 
     switch (input) {
-    case 'a': Login(); //AdminMenu(); 
+    case 'a': DisplayCarDetails(); //Login(); //AdminMenu(); 
         break;
 
     case 'b': RegisterNewUser();
@@ -291,6 +305,155 @@ int Re_enterPassword(char  passwd[]) //Check the 'Re-enter' password is the same
     }
     return 0;
 }
+
+
+void RegisterCar() {
+
+    //Rye George
+
+    CarDetails carDetails;
+    string firstName, lastName;
+    fstream myFile;
+
+    cout << "\nTo register your vehical please enter the following details: \n";
+
+    cout << "Please enter your first name: ";
+    cin >> firstName;
+
+    cout << "Please enter your last name: ";
+    cin >> lastName;
+
+    cout << "Please enter your license plate: ";
+    cin >> carDetails.licensePlate;
+
+    cout << "Please enter your vehicals make: ";
+    cin >> carDetails.vehicalMake;
+
+    cout << "Please enter your vehicals model: ";
+    cin >> carDetails.vehicalModel;
+
+    myFile.open("carDetails.csv", ios::app);
+    if (myFile.is_open()) {
+        myFile << firstName << "," << lastName << "," << carDetails.licensePlate << "," << carDetails.vehicalMake << "," << carDetails.vehicalModel << "," << endl;
+    }
+    myFile.close();
+}
+
+void DisplayCarDetails() {
+
+    //Rye George
+
+    cout << "\nTo view car details, please choose one of the following options:\n";
+
+    cout << "a) Search car details\n";
+    cout << "b) View all car details\n";
+    cout << "c) Exit\n";
+
+    char input;
+    cin >> input;
+
+    while (input != 'a' && input != 'b' && input != 'c') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+
+
+    switch (input) {
+    case 'a': SearchCarDetails();
+        break;
+    case 'b': PrintCarDetails();
+        break;
+    case 'c': break;
+        break;
+    }
+}
+
+void PrintCarDetails() {
+
+    fstream myFile;
+    CarDetails carDetails;
+    string line;
+
+    myFile.open("carDetails.csv", ios::in);
+
+    while (getline(myFile, line))
+    {
+        stringstream ss(line);
+
+        getline(ss, carDetails.firstName, ',');
+        getline(ss, carDetails.lastName, ',');
+        getline(ss, carDetails.licensePlate, ',');
+        getline(ss, carDetails.vehicalMake, ',');
+        getline(ss, carDetails.vehicalModel, ',');
+
+        cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
+    }
+    myFile.close();
+}
+
+void SearchCarDetails() {
+
+    //Rye George
+
+    CarDetails carDetails;
+    fstream myFile;
+    string line, fName, lName;
+
+    cout << "To search a cars details, please enter the name of the driver: \n";
+
+    cout << "Please enter the drivers first name: ";
+    cin >> fName;
+
+    cout << "Please enter the drivers last name: ";
+    cin >> lName;
+
+    myFile.open("carDetails.csv", ios::in);
+
+    while (getline(myFile, line))
+    {
+        stringstream ss(line);
+
+        getline(ss, carDetails.firstName, ',');
+        getline(ss, carDetails.lastName, ',');
+        getline(ss, carDetails.licensePlate, ',');
+        getline(ss, carDetails.vehicalMake, ',');
+        getline(ss, carDetails.vehicalModel, ',');
+
+        if (fName == carDetails.firstName && lName == carDetails.lastName) {
+            cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
+        }
+    }
+    myFile.close();
+}
+
+
+void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the output on the console
+    //Shaun Cooper
+
+    cout << "\nFrom outputDetails Function";
+    cout << "\n***************************";
+    int i;
+    for (i = 0; i < customer.size(); i++) {
+        cout << "\nThe name you entered is: " << customer[i].firstName;
+        cout << "\nThe phone number you entered is: " << customer[i].phoneNumber;
+    }
+}
+
+
+void WriteToFile(vector<Customer>& customer) { //writeToFile function facilitates the storing of customer detials
+    //Shaun Cooper
+
+    cout << "\nWriting to file ";
+    cout << "\n***************************";
+    int i;
+    fstream myFile("customerDetails.csv", ios::app);
+    for (i = 0; i < customer.size(); i++) {
+        myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
+    }
+    myFile.close();
+}
+
 
 bool ReadFromLoginFile(string fileName, string pw, string e) {
 
