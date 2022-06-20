@@ -427,34 +427,6 @@ void SearchCarDetails() {
     myFile.close();
 }
 
-
-void OutputDetails(vector<Customer>& customer) { //outputMarker to produce the output on the console
-    //Shaun Cooper
-
-    cout << "\nFrom outputDetails Function";
-    cout << "\n***************************";
-    int i;
-    for (i = 0; i < customer.size(); i++) {
-        cout << "\nThe name you entered is: " << customer[i].firstName;
-        cout << "\nThe phone number you entered is: " << customer[i].phoneNumber;
-    }
-}
-
-
-void WriteToFile(vector<Customer>& customer) { //writeToFile function facilitates the storing of customer detials
-    //Shaun Cooper
-
-    cout << "\nWriting to file ";
-    cout << "\n***************************";
-    int i;
-    fstream myFile("customerDetails.csv", ios::app);
-    for (i = 0; i < customer.size(); i++) {
-        myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
-    }
-    myFile.close();
-}
-
-
 bool ReadFromLoginFile(string fileName, string pw, string e) {
 
     //Rye George
