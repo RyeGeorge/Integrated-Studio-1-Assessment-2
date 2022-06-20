@@ -27,7 +27,7 @@ struct User {
 
 
 struct Trip {
-    string customerName;
+    string emailAddress;
     string customerPhoneNumber;
     string destinationAddress;
     int tripTime; //Minutes
@@ -39,7 +39,7 @@ struct Trip {
     bool tripCompleted;
 
     Trip() {
-        customerName = "customerName";
+        emailAddress = "emailAddress";
         customerPhoneNumber = "customerPhoneNumber";
         destinationAddress = "destinationAddress";
         tripTime = 1;
@@ -67,13 +67,11 @@ struct Property {
     string identifyingFeature;
 };
 
-vector <User> RegisterNewUser(vector<User>& customer);
-vector <Trip> NewTrip(vector<Trip>& trip);
-vector <Trip> YourTripHistory();
+void RegisterNewUser();
+void NewTrip();
+void YourTripHistory();
 void ReportProperty(string fileName, string type);
-vector<Property> DisplayProperty(string fileName, string type);
-void WriteToFile(vector<User>& customer);
-void OutputDetails(vector<User>& customer);
+void DisplayProperty(string fileName, string type);
 
 int CheckPassword(char passwd[]);
 int Re_enterPassword(char  passwd[]);
@@ -105,20 +103,14 @@ void AdminMenu();
 void ManageCustomersMenu();
 void ManageDriversMenu();
 
-vector<User> customer;
-vector<User> customerFromFile;
-vector<Trip> trip;
-vector<Trip> tripFromFile;
-
 //Keeps track of current account the user is logged into
 string currentPassword;
 string currentEmail;
 
 int main()
 {
-   // DisplayProperty("lostProperty.csv", "Lost");
-   // DisplayProperty("foundProperty.csv", "Found");
-    //YourTripHistory();
+    NewTrip();
+    YourTripHistory();
     CompanyHeader();
 
     cout << "Please choose one of the following options:\n";
@@ -142,7 +134,7 @@ int main()
     case 'a': Login(); //AdminMenu(); 
         break;
 
-    case 'b': RegisterNewUser(customer);
+    case 'b': RegisterNewUser();
         break;
 
     case 'c': break;
@@ -230,7 +222,7 @@ void CompanyHeader() {
 };
 
 
-vector <User> RegisterNewUser(vector<User>& customer) {
+void RegisterNewUser() {
     // Shaun Cooper
 
     cout << "--------------------------" << endl;
@@ -271,19 +263,16 @@ vector <User> RegisterNewUser(vector<User>& customer) {
         break;
     }
 
-    customer.push_back(m);
-
     //Write trip details to database
     int i;
     fstream myFile("customerDetails.csv", ios::app);
-    for (i = 0; i < customer.size(); i++) {
-        myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].homeAddress << "," << customer[i].emailAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
-    }
+    myFile << m.firstName << "," << m.lastName << "," << m.homeAddress << "," << m.emailAddress << "," << m.phoneNumber << "," << m.password << endl;
+    
     myFile.close();
 
     cout << "\nYou have successfully registered a new user.\n\n";
 
-    return (customer);
+    return;
 }
 
 int CheckPassword(char passwd[]) //Check complexity of password
@@ -866,7 +855,7 @@ void CustomerMenu(string pass, string email) {
     }
 
     switch (input) {
-    case 'a': NewTrip(trip);
+    case 'a': NewTrip();
 
         break;
 
@@ -1046,7 +1035,7 @@ void ManageDriversMenu() {
     }
 }
 
-vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
+void NewTrip() { //Enter a new trip
     //Shaun Cooper
 
     cout << "--------------------------" << endl;
@@ -1062,8 +1051,8 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
     getline(cin, m.tripDate);
     cout << "Enter the time you would like to be picked up: ";
     getline(cin, m.pickupTime);
-    cout << "Enter customer name: ";
-    getline(cin, m.customerName);
+    cout << "Enter your email address: ";
+    getline(cin, m.emailAddress);
     cout << "How many passengers will there be?: ";
     cin >> m.passengers;
     cout << "How long will the trip take? (mins): ";
@@ -1072,20 +1061,26 @@ vector <Trip> NewTrip(vector<Trip>& trip) { //Enter a new trip
     cout << "\nThe price of your trip is: $" << m.price << endl;
     cout << endl;
 
-    trip.push_back(m);
+    char answer;
+    cout << "Enter 'y' to accept or 'n' to cancel: ";
+    cin >> answer;
+    
 
     //Write trip details to database
-    int i;
-    fstream myFile("tripDetails.csv", ios::app);
-    for (i = 0; i < trip.size(); i++) {
-        myFile << trip[i].customerName << "," << trip[i].tripDate << "," << trip[i].pickupTime << "," << trip[i].pickupLocation << "," << trip[i].destinationAddress << "," << trip[i].tripTime << "," << trip[i].passengers << "," << trip[i].price << endl;
-    }
-    myFile.close();
+    if (tolower(answer) == 'y') {
+        fstream myFile("tripDetails.csv", ios::app);
+        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << endl;
+        myFile.close();
 
-    return (trip);
+        cout << "\nYour trip has been ordered.\n\n";
+    }
+    else
+        cout << "\nTrip cancelled...\n\n";
+
+    return;
 }
 
-void ReportProperty(string fileName, string type) {
+void ReportProperty(string fileName, string type) { //Report lost or found property
     //Shaun Cooper
 
     cout << "--------------------------" << endl;
@@ -1140,11 +1135,8 @@ void ReportProperty(string fileName, string type) {
         getline(cin, m.identifyingFeature);
 
         //Write trip details to database
-        int i;
         fstream myFile(fileName, ios::app);
-        
         myFile << m.itemType << "," << m.itemDescription << "," << m.identifyingFeature << endl;
-       
         myFile.close();
 
         cout << "\nYour report has been submitted." << endl;
@@ -1156,7 +1148,7 @@ void ReportProperty(string fileName, string type) {
     return;
 }
 
-vector<Property> DisplayProperty(string fileName, string type) {
+void DisplayProperty(string fileName, string type) { //Display all lost or found property
     //Shaun Cooper
 
     cout << "---------------------------" << endl;
@@ -1183,7 +1175,7 @@ vector<Property> DisplayProperty(string fileName, string type) {
         getline(linestream, item, ',');
         m.identifyingFeature = item;
 
-        tempProperty.push_back(m);
+       // tempProperty.push_back(m);
     }
     myFile.close();
     cout << endl;
@@ -1195,26 +1187,24 @@ vector<Property> DisplayProperty(string fileName, string type) {
     }
 
     cout << endl;
-    return(tempProperty);
+    return;
 }
 
-vector <Trip> YourTripHistory() {
+void YourTripHistory() {
     //Shaun Cooper
 
     cout << "--------------------------" << endl;
     cout << "     Your Trip History    " << endl;
     cout << "--------------------------" << endl;
 
-    vector<Trip> tempTrips;
     fstream myFile;
-    fstream tempFile;
 
     string line, email, pass, password;
     User customerInfo;
 
     bool detailCheck = false;
     while (detailCheck == false){
-        cout << "Please confirm your account: \n";
+        cout << "\nPlease confirm your account...\n";
 
         cout << "Enter your email: ";
         cin >> email;
@@ -1223,22 +1213,24 @@ vector <Trip> YourTripHistory() {
         cin >> pass;
         cout << endl;
 
-        //tempFile.open("tempAccountDetails.csv", ios::out);
-
         myFile.open("customerDetails.csv", ios::in);
         if (myFile.is_open()) {
             while (getline(myFile, line)) {
+                cin.clear();
+                cin.ignore(1000, '\n');
                 stringstream ss(line);
+                string password = customerInfo.password;
 
                 getline(ss, customerInfo.firstName, ',');
                 getline(ss, customerInfo.lastName, ',');
-                getline(ss, customerInfo.emailAddress, ',');
                 getline(ss, customerInfo.homeAddress, ',');
+                getline(ss, customerInfo.emailAddress, ',');
                 getline(ss, customerInfo.phoneNumber, ',');
                 getline(ss, password, ',');
                        
                 if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
                     detailCheck = true;
+                    myFile.close();
                 }
                 else {
                     cout << "ERROR: Account does not exist\n";
@@ -1247,25 +1239,45 @@ vector <Trip> YourTripHistory() {
         }
     }
 
+    myFile.open("tripDetails.csv", ios::in);
+    int i = 0;
+    vector<Trip> trips;
+    Trip m;
+    int tripTime, passengers;
+    float price;
 
+    while (getline(myFile, line)) {
+        istringstream linestream(line);//to split the row into coloumns/properties
+        string item;
+        //until the appearance of comma, everything is stored in item
+        getline(linestream, item, ','); //the variable 'item' is of string type
+        m.emailAddress = item;
+        getline(linestream, item, ',');
+        m.tripDate = item;
+        getline(linestream, item, ',');
+        m.pickupTime = item;
+        getline(linestream, item, ',');
+        m.pickupLocation = item;
+        getline(linestream, item, ',');
+        m.destinationAddress = item;
+        getline(linestream, item, ',');
+        tripTime = stoi(item); //use stoi() to convert string into integer
+        m.tripTime = tripTime;
+        getline(linestream, item, ',');
+        passengers = stoi(item);
+        m.passengers = passengers;
+        getline(linestream, item, ',');
+        price = stof(item); //use stof() to convert string into float
+        m.price = price;
 
-    if (detailCheck) {
-
-        myFile.close();
-        tempFile.close();
-
-        myFile.open("customerDetails.csv", ios::out);
-        tempFile.open("tempAccountDetails.csv", ios::in);
-
-        while (getline(tempFile, line)) { //Copies contents of tempFile into main file
-            myFile << line << endl;
+        trips.push_back(m);
+    }
+   
+    for (i = 0;i < trips.size();i++) {
+        if (trips[i].emailAddress == email) {
+            cout << "- Date: " << trips[i].tripDate << "Pickup Address: " << trips[i].pickupLocation << ", Destination Address: " << trips[i].destinationAddress << ", Price: $" << trips[i].price << endl;
         }
-        myFile.close();
-        tempFile.close();
     }
-    else {
-        cout << "ERROR: Account does not exist\n";
-    }
-
-    return (tempTrips);
+    cout << endl;    
+    return;
 }
