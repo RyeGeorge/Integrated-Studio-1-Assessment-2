@@ -37,6 +37,7 @@ struct Trip {
     string pickupLocation;
     int passengers;
     bool tripCompleted;
+    int tripIdNumber;
 
     Trip() {
         emailAddress = "emailAddress";
@@ -48,7 +49,8 @@ struct Trip {
         price = 1;
         pickupLocation = "pickupLocation";
         passengers = 1;
-        tripCompleted = true;
+        tripCompleted = false;
+        tripIdNumber = 0;
     }
 };
 
@@ -252,6 +254,8 @@ void RegisterNewUser(string fileName) {
 
     cout << "             Register New User" << endl;
     cout << "------------------------------------------------" << endl;
+    cin.clear();
+    cin.ignore(1000, '\n');
 
     User m;//we receive one user data at any given time
 
@@ -1071,8 +1075,8 @@ void NewTrip() { //Enter a new trip
 
     Trip m;//we receive one user data at any given time
     m.emailAddress = currentEmail; //email is updated by the logged in user
-    cin.clear();
-    cin.ignore(1000, '\n');
+    /*cin.clear();
+    cin.ignore(1000, '\n');*/
     cout << "\nEnter the destination address: ";
     getline(cin, m.destinationAddress);
     cout << "Enter your pickup address: ";
@@ -1093,11 +1097,21 @@ void NewTrip() { //Enter a new trip
     cout << "Enter 'y' to accept or 'n' to cancel: ";
     cin >> answer;
     
+    //Obtain trip ID number by counting amount of lines in database
+    fstream myFile("tripDetails.csv", ios::in);
+    string line;
+    int count = 0;
+    while (getline(myFile, line)) {
+        istringstream linestream(line);//to split the row into coloumns/properties
+        count++;
+    }
+    myFile.close();
+    m.tripIdNumber = count + 1; //Next number in list
 
     //Write trip details to database
     if (tolower(answer) == 'y') {
         fstream myFile("tripDetails.csv", ios::app);
-        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << endl;
+        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << "," << m.tripIdNumber << "," << m.tripCompleted << endl;
         myFile.close();
 
         cout << "\nYour trip has been ordered.\n\n";
@@ -1202,8 +1216,6 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
         m.itemDescription = item;
         getline(linestream, item, ',');
         m.identifyingFeature = item;
-
-       // tempProperty.push_back(m);
     }
     myFile.close();
     cout << endl;
@@ -1278,3 +1290,10 @@ void YourTripHistory() {
     cout << endl;    
     return;
 }
+
+//int GetTripId() {
+//    Trip m;
+//    m.tripIdNumber = tripIdNumber;
+//    tripIdNumber++;
+//    return;
+//}
