@@ -82,7 +82,7 @@ bool LoginLoop(string, string, string);
 bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
-void RegisterCar();
+void RegisterCar(string, string);
 
 void FileComplaint();
 void DisplayComplaints();
@@ -98,7 +98,7 @@ void PrintAccountDetails(string);
 void SearchAccountDetails(string);
 void DeleteAccount(string, string, string);
 
-void CustomerMenu(string, string);
+void CustomerMenu();
 void DriverMenu();
 void AdminMenu();
 void ManageCustomersMenu();
@@ -111,7 +111,8 @@ string currentEmail;
 int main()
 {
     CompanyHeader();
-    cout << "------------------------------------------------\n" << endl;
+    cout << "                 Main Menu                    \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Login\n";
@@ -173,8 +174,9 @@ void Login() {
 
     system("CLS");
     CompanyHeader();
+    cout << "                 Login Menu                    \n";
+    cout << "------------------------------------------------\n\n";
 
-    cout << "                Login Menu                   \n";
     
     string tempEmail;
     string tempPassword;
@@ -195,7 +197,7 @@ void Login() {
 
 
     switch (input) {
-    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { CustomerMenu(currentPassword, currentEmail); }
+    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { CustomerMenu(); }
             break;
 
     case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { DriverMenu(); }//pass then email
@@ -239,7 +241,6 @@ void CheckInput(char input) {
 }
 
 void CompanyHeader() {
-    // system("CLS");
     cout << "------------------------------------------------\n";
     cout << "            Taxi Booking Service\n";
 
@@ -264,6 +265,9 @@ void RegisterNewUser(string fileName) {
     cin >> m.emailAddress;
     cout << "Please enter your Phone Number: ";
     cin >> m.phoneNumber;
+
+    RegisterCar(m.firstName, m.lastName);
+
     cin.clear();
     cin.ignore(1000, '\n');
 
@@ -347,23 +351,17 @@ int Re_enterPassword(char  passwd[]) //Check the 'Re-enter' password is the same
 }
 
 
-void RegisterCar() {
+void RegisterCar(string firstName, string lastName) {
 
     //Rye George
 
     CarDetails carDetails;
-    string firstName, lastName;
     fstream myFile;
 
-    cout << "\nTo register your vehical please enter the following details: \n";
+    carDetails.firstName = firstName;
+    carDetails.lastName = lastName;
 
-    cout << "Please enter the first name registered to the vehical: ";
-    cin >> firstName;
-
-    cout << "Please enter the last name registered to the vehical: ";
-    cin >> lastName;
-
-    cout << "Please enter your license plate: ";
+    cout << "Please enter your vehicals license plate: ";
     cin >> carDetails.licensePlate;
 
     cout << "Please enter your vehicals make: ";
@@ -382,6 +380,9 @@ void RegisterCar() {
 void DisplayCarDetails() {
 
     //Rye George
+    CompanyHeader();
+    cout << "                 Car Details                    \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view car details, please choose one of the following options:\n";
 
@@ -506,6 +507,10 @@ void FileComplaint() {
 
     //Rye George
 
+    CompanyHeader();
+    cout << "               File Complaint                 \n";
+    cout << "------------------------------------------------\n\n";
+
     string driverFirstName, driverLastName, complaint;
 
     cout << "\nFill out the below information to file a complaint against a driver\n\n";
@@ -541,6 +546,10 @@ void DisplayComplaints() {
 
     //Rye George
 
+    CompanyHeader();
+    cout << "               View Complaints                \n";
+    cout << "------------------------------------------------\n\n";
+
     fstream myFile;
 
     myFile.open("driverComplaints.csv", ios::in);
@@ -567,6 +576,10 @@ void DisplayComplaints() {
 void ViewCustomerDetails() {
 
     //Rye George
+
+    CompanyHeader();
+    cout << "              Customer Details                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view customer details, please choose one of the following options:\n";
 
@@ -597,6 +610,10 @@ void ViewCustomerDetails() {
 void ViewDriverDetails() {
 
     //Rye George
+
+    CompanyHeader();
+    cout << "               Driver Details                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view driver details, please choose one of the following options:\n";
 
@@ -765,6 +782,10 @@ void UpdateAccountDetails(string fileName) {
 
     //Rye George
 
+    CompanyHeader();
+    cout << "               Update Account                \n";
+    cout << "------------------------------------------------\n\n";
+
     User userDetails;
     fstream myFile;
 
@@ -821,21 +842,22 @@ void UpdateAccountDetails(string fileName) {
 //
 
 
-void CustomerMenu(string pass, string email) {
+void CustomerMenu() {
 
     // Rye George
 
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "               Customer Menu                 \n\n";
+    cout << "                Customer Menu                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Enter new trip\n";
     cout << "b) Update account details\n";
     cout << "c) Search trip history\n";
     cout << "d) Report lost property\n";
-    cout << "e) Report complaint\n";
+    cout << "e) File complaint\n";
     cout << "f) Delete Account\n";
     cout << "g) Exit\n";
 
@@ -865,7 +887,11 @@ void CustomerMenu(string pass, string email) {
     case 'e': FileComplaint();
         break;
 
-    case 'f': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+    case 'f': 
+        CompanyHeader();
+        cout << "               Delete Account                \n";
+        cout << "------------------------------------------------\n\n";
+        DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
 
     case 'g': break;
         break;
@@ -879,8 +905,9 @@ void DriverMenu() {
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "                Driver Menu                 \n\n";
-
+    cout << "                 Driver Menu                \n";
+    cout << "------------------------------------------------\n\n";
+    
     cout << "Please choose one of the following options:\n";
     cout << "a) Find new trip\n";
     cout << "b) Search trip history\n";
@@ -908,10 +935,14 @@ void DriverMenu() {
     case 'c': ReportProperty("foundProperty.csv", "Found");
         break;
 
-    case 'd': //Update Account details
+    case 'd': UpdateAccountDetails("driverDetails.csv");
         break;
 
-    case 'e': //DeleteDriverAccount
+    case 'e': 
+        CompanyHeader();
+        cout << "               Delete Account                \n";
+        cout << "------------------------------------------------\n\n";
+        DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
 
     case 'f': break;
         break;
@@ -925,7 +956,8 @@ void AdminMenu() {
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "                 Admin Menu                 \n\n";
+    cout << "                 Admin Menu                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Search all trip history\n";
@@ -967,14 +999,14 @@ void ManageCustomersMenu() {
 
     //Rye George
 
-    cout << "--------------------------" << endl;
-    cout << "     Manage Customers     " << endl;
-    cout << "--------------------------" << endl;
+    CompanyHeader();
+    cout << "              Manage Customers                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) View customer details\n";
-    cout << "b) Delete a customers account\n";
-    cout << "e) Exit\n";
+    cout << "b) View customer complaints\n";
+    cout << "c) Exit\n";
 
     char input;
     cin >> input;
@@ -989,7 +1021,7 @@ void ManageCustomersMenu() {
     case 'a': ViewCustomerDetails();
         break;
 
-    case 'b': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+    case 'b': DisplayComplaints();
         break;
 
     case 'c': break;
@@ -1001,14 +1033,14 @@ void ManageDriversMenu() {
 
     //Rye George
 
-    cout << "--------------------------" << endl;
-    cout << "      Manage Drivers      " << endl;
-    cout << "--------------------------" << endl;
+    CompanyHeader();
+    cout << "               Manage Drivers                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) View driver details\n";
-    cout << "b) Delete a drivers account\n";
-    cout << "e) Exit\n";
+    cout << "b) View car details\n";
+    cout << "c) Exit\n";
 
     char input;
     cin >> input;
@@ -1023,7 +1055,7 @@ void ManageDriversMenu() {
     case 'a': ViewDriverDetails();
         break;
 
-    case 'b': //RemoveDriver();
+    case 'b': DisplayCarDetails();
         break;
 
     case 'c': break;
