@@ -222,11 +222,11 @@ bool LoginLoop(string file, string password, string email) {
             currentPassword = password;
             currentEmail = email;
             return true;
-            break;
         }
 
         cout << "\nPassword or Email are incorrect, you have " << i - 1 << " attemps left\n\n\n";
     }
+    return false;
 }
 
 void CheckInput(char input) {
@@ -252,6 +252,8 @@ void RegisterNewUser(string fileName) {
 
     cout << "             Register New User" << endl;
     cout << "------------------------------------------------" << endl;
+    cin.clear();
+    cin.ignore(1000, '\n');
 
     User m;//we receive one user data at any given time
 
@@ -632,9 +634,9 @@ void ViewDriverDetails() {
 
 
     switch (input) {
-    case 'a': //SearchAccountDetails("driverDetails.csv");
+    case 'a': SearchAccountDetails("driverDetails.csv");
         break;
-    case 'b': //PrintAccountDetails("driverDetails.csv");
+    case 'b': PrintAccountDetails("driverDetails.csv");
         break;
     case 'c': break;
         break;
@@ -834,6 +836,32 @@ void UpdateAccountDetails(string fileName) {
     myFile.open("customerDetails.csv", ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
 
+}
+
+
+void FindNewTrip() {
+
+    //Rye George
+
+    fstream myFile, tempFile;
+    string line;
+    Trip tripDetails;
+    string tripTime, price, passengers, tripCompleted;
+
+    myFile.open("tripDetails.csv", ios::in);
+    while (getline(myFile, line)) {
+        stringstream ss(line);
+
+        getline(ss, tripDetails.emailAddress, ',');
+        getline(ss, tripDetails.destinationAddress, ',');
+        getline(ss, tripTime, ',');
+        getline(ss, tripDetails.tripDate, ',');
+        getline(ss, price, ',');
+        getline(ss, tripDetails.pickupLocation, ',');
+        getline(ss, passengers, ',');
+        getline(ss, tripCompleted, ',');
+
+    }
 }
 
 
