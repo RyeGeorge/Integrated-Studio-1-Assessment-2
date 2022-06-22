@@ -105,10 +105,14 @@ void DriverMenu();
 void AdminMenu();
 void ManageCustomersMenu();
 void ManageDriversMenu();
+void MenuLoop();
 
 //Keeps track of current account the user is logged into
 string currentPassword;
 string currentEmail;
+
+//Global variable to return to proper menu
+char x;
 
 int main()
 {
@@ -200,13 +204,13 @@ void Login() {
 
 
     switch (input) {
-    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { CustomerMenu(); }
+    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { x = 'c'; CustomerMenu(); }
             break;
 
-    case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { DriverMenu(); }//pass then email
+    case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { x = 'd'; DriverMenu(); }//pass then email
             break;
 
-    case 'c': if (LoginLoop("adminDetails.csv", tempPassword, tempEmail)) { AdminMenu(); }//Pass then email
+    case 'c': if (LoginLoop("adminDetails.csv", tempPassword, tempEmail)) { x = 'a';  AdminMenu(); }//Pass then email
             break;
     }
 
@@ -413,6 +417,8 @@ void DisplayCarDetails() {
     case 'c': break;
         break;
     }
+
+    MenuLoop();
 }
 
 void PrintCarDetails() {
@@ -436,6 +442,8 @@ void PrintCarDetails() {
         cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
     }
     myFile.close();
+
+    MenuLoop();
 }
 
 void SearchCarDetails() {
@@ -471,6 +479,8 @@ void SearchCarDetails() {
         }
     }
     myFile.close();
+
+    MenuLoop();
 }
 
 bool ReadFromLoginFile(string fileName, string pw, string e) {
@@ -545,6 +555,8 @@ void FileComplaint() {
 
         myFile << driverFirstName << "," << driverLastName << "," << complaint << "," << endl;
     }
+
+    MenuLoop();
 }
 
 void DisplayComplaints() {
@@ -576,6 +588,8 @@ void DisplayComplaints() {
             cout << "     Complaint:  " << complaint << endl << endl;
         }
     }
+
+    MenuLoop();
 }
 
 void ViewCustomerDetails() {
@@ -610,6 +624,8 @@ void ViewCustomerDetails() {
     case 'c': break;
         break;
     }
+
+    MenuLoop();
 }
 
 void ViewDriverDetails() {
@@ -644,6 +660,8 @@ void ViewDriverDetails() {
     case 'c': break;
         break;
     }
+
+    MenuLoop();
 }
 
 void SearchAccountDetails(string fileName) {
@@ -686,6 +704,8 @@ void SearchAccountDetails(string fileName) {
         if (userDetails.firstName != fName && userDetails.lastName != lName)
             cout << "\nERROR: Accout does not exist\n";
     }
+
+    MenuLoop();
 }
 
 void PrintAccountDetails(string fileName) {
@@ -720,6 +740,8 @@ void PrintAccountDetails(string fileName) {
             cout << "Password: \\t" << password << endl << endl;
         }
     }
+
+    MenuLoop();
 }
 
 void DeleteAccount(string fileName, string currentPass, string currentEmail) {
@@ -843,6 +865,7 @@ void UpdateAccountDetails(string fileName) {
     myFile.open(fileName, ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
 
+    MenuLoop();
 }
 
 
@@ -966,6 +989,8 @@ void FindNewTrip() {
 
         myFile.close();
     }
+
+    MenuLoop();
 }
 
 
@@ -1024,6 +1049,7 @@ void CustomerMenu() {
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
         DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+        MenuLoop();
 
     case 'g': break;
         break;
@@ -1075,6 +1101,7 @@ void DriverMenu() {
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
         DeleteAccount("driverDetails.csv", currentPassword, currentEmail);
+        MenuLoop();
 
     case 'f': break;
         break;
@@ -1120,6 +1147,7 @@ void AdminMenu() {
     case 'd': 
         DisplayProperty("lostProperty.csv", "Lost");
         DisplayProperty("foundProperty.csv", "Found");
+        MenuLoop();
         break;
 
     case 'e': break;
@@ -1250,6 +1278,7 @@ void NewTrip() { //Enter a new trip
     else
         cout << "\nTrip cancelled...\n\n";
 
+    MenuLoop();
     return;
 }
 
@@ -1319,6 +1348,8 @@ void ReportProperty(string fileName, string type) { //Report lost or found prope
         cin >> loop;
         cout << endl;
     }
+
+    MenuLoop();
     return;
 }
 
@@ -1350,12 +1381,6 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
     }
     myFile.close();
     cout << endl;
-
-    char answer = 'y';
-    while (tolower(answer) == 'y') {
-        cout << "When you have finished reviewing the items, press any key then enter to exit.";
-        cin >> answer;
-    }
 
     cout << endl;
     return;
@@ -1418,7 +1443,23 @@ void YourTripHistory() {
             cout << trips[i].emailAddress << "," << trips[i].tripDate << "," << trips[i].pickupTime << "," << trips[i].pickupLocation << "," << trips[i].destinationAddress << "," << trips[i].tripTime << "," << trips[i].passengers << "," << trips[i].price << endl << endl;
         }
     }
-    cout << endl;    
+    cout << endl;  
+
+    MenuLoop();
     return;
 }
 
+void MenuLoop() {
+    cout << "\n\nEnter any key to exit: ";
+    char input;
+    cin >> input;
+    
+    switch (x) {
+    case 'c': CustomerMenu();
+        break;
+    case 'd': DriverMenu();
+        break;
+    case 'a': AdminMenu();
+        break;
+    }
+}
