@@ -37,6 +37,7 @@ struct Trip {
     string pickupLocation;
     int passengers;
     bool tripCompleted;
+    int tripIdNumber;
 
     Trip() {
         emailAddress = "emailAddress";
@@ -48,7 +49,8 @@ struct Trip {
         price = 1;
         pickupLocation = "pickupLocation";
         passengers = 1;
-        tripCompleted = true;
+        tripCompleted = false;
+        tripIdNumber = 0;
     }
 };
 
@@ -110,6 +112,12 @@ string currentEmail;
 
 int main()
 {
+    //fstream file;
+    //file.open("tripDetails.csv", ios::out);
+    //file << "myemail@email,03/04/22,5:00,New York,Mars,80,2,30.5,1,0" << endl;
+    //file << "myemail@email,03/04/22,5:00,Hogwarts,Middle Earth,80,2,30.5,2,0" << endl;
+    //file << "myemail@email,03/04/22,5:00,Canada,Texas,80,2,30.5,3,1" << endl;
+
     CompanyHeader();
     cout << "                 Main Menu                    \n";
     cout << "------------------------------------------------\n\n";
@@ -846,21 +854,117 @@ void FindNewTrip() {
     fstream myFile, tempFile;
     string line;
     Trip tripDetails;
-    string tripTime, price, passengers, tripCompleted;
+    string tripTime, price, passengers, ID, tripCompleted;
+    string oEmailAddress, oTripDate, oPickupTime, oPickupLocation, oDestinationLocation, oTripTime, oPassengers, oPrice, oID, temp;
+    int maxID = 0;
 
     myFile.open("tripDetails.csv", ios::in);
     while (getline(myFile, line)) {
         stringstream ss(line);
 
         getline(ss, tripDetails.emailAddress, ',');
+        getline(ss, tripDetails.tripDate, ',');
+        getline(ss, tripDetails.pickupTime, ',');
+        getline(ss, tripDetails.pickupLocation, ',');
         getline(ss, tripDetails.destinationAddress, ',');
         getline(ss, tripTime, ',');
-        getline(ss, tripDetails.tripDate, ',');
-        getline(ss, price, ',');
-        getline(ss, tripDetails.pickupLocation, ',');
         getline(ss, passengers, ',');
+        getline(ss, price, ',');
+        getline(ss, ID, ',');
         getline(ss, tripCompleted, ',');
 
+        if (tripCompleted == "0") {
+            cout << endl;
+            cout << "ID " << ID << ":\t\t\t";
+            cout << tripDetails.tripDate << endl;
+            
+            cout << "Customer Email: \t" << tripDetails.emailAddress << endl;
+            cout << "Pickup Location: \t" << tripDetails.pickupLocation << endl;
+            cout << "Pickup time: \t\t" << tripDetails.pickupTime << endl;
+            cout << "Destination Address: \t" << tripDetails.destinationAddress << endl;
+            cout << "Number Of Passengers: \t" << passengers << endl;
+            cout << "Price: \t\t\t" << "$" << price << endl;
+        }
+    }
+    myFile.close();
+
+    int enteredID;
+    cout << "\nPlease enter the ID number of the trip you want to take(enter 0 to exit): ";
+    cin >> enteredID;
+
+    myFile.open("tripDetails.csv", ios::in);
+    tempFile.open("tempAccountDetails.csv", ios::out);
+
+    if (enteredID > 0) {
+        while (getline(myFile, line)) {
+            stringstream ss(line);
+            getline(ss, tripDetails.emailAddress, ',');
+            getline(ss, tripDetails.tripDate, ',');
+            getline(ss, tripDetails.pickupTime, ',');
+            getline(ss, tripDetails.pickupLocation, ',');
+            getline(ss, tripDetails.destinationAddress, ',');
+            getline(ss, tripTime, ',');
+            getline(ss, passengers, ',');
+            getline(ss, price, ',');
+            getline(ss, ID, ',');
+            getline(ss, tripCompleted, ',');
+
+            //Copy all lines to tempFile except for the one that the driver selected
+            int id = stoi(ID);
+            if (id != enteredID) {
+                tempFile << tripDetails.emailAddress << ',' 
+                         << tripDetails.tripDate << ',' 
+                         << tripDetails.pickupTime << ',' 
+                         << tripDetails.pickupLocation << "," 
+                         << tripDetails.destinationAddress << ',' 
+                         << tripTime << ','
+                         << passengers << ',' 
+                         << price << ','
+                         << ID << "," 
+                         << tripCompleted << ',' << endl;
+
+                
+            }
+            
+            if (id == enteredID) {
+
+                oEmailAddress = tripDetails.emailAddress;
+                oTripDate = tripDetails.tripDate;
+                oPickupTime = tripDetails.pickupTime;
+                oPickupLocation = tripDetails.pickupLocation;
+                oDestinationLocation = tripDetails.destinationAddress;
+                oTripTime = tripTime;
+                oPassengers = passengers;
+                oPrice = price;
+
+            }
+        }
+        myFile.close();
+        tempFile.close();
+
+        //Copy from tempFile back to myFile
+        tempFile.open("tempAccountDetails.csv", ios::in);
+        myFile.open("tripDetails.csv", ios::out);
+
+        while (getline(tempFile, line)) {
+            myFile << line << endl;
+        }
+        myFile.close();
+
+        myFile.open("tripDetails.csv", ios::app);
+
+        myFile << oEmailAddress << ','
+            << oTripDate << ','
+            << oPickupTime << ','
+            << oPickupLocation << ","
+            << oDestinationLocation << ','
+            << oTripTime << ','
+            << oPassengers << ','
+            << oPrice << ','
+            << enteredID << ","
+            << '1' << ',' << endl;
+
+        myFile.close();
     }
 }
 
@@ -954,7 +1058,7 @@ void DriverMenu() {
     }
 
     switch (input) {
-    case 'a': //Find new trip
+    case 'a': FindNewTrip();
         break;
 
     case 'b': YourTripHistory();
@@ -1099,8 +1203,8 @@ void NewTrip() { //Enter a new trip
 
     Trip m;//we receive one user data at any given time
     m.emailAddress = currentEmail; //email is updated by the logged in user
-    cin.clear();
-    cin.ignore(1000, '\n');
+    /*cin.clear();
+    cin.ignore(1000, '\n');*/
     cout << "\nEnter the destination address: ";
     getline(cin, m.destinationAddress);
     cout << "Enter your pickup address: ";
@@ -1121,11 +1225,21 @@ void NewTrip() { //Enter a new trip
     cout << "Enter 'y' to accept or 'n' to cancel: ";
     cin >> answer;
     
+    //Obtain trip ID number by counting amount of lines in database
+    fstream myFile("tripDetails.csv", ios::in);
+    string line;
+    int count = 0;
+    while (getline(myFile, line)) {
+        istringstream linestream(line);//to split the row into coloumns/properties
+        count++;
+    }
+    myFile.close();
+    m.tripIdNumber = count + 1; //Next number in list
 
     //Write trip details to database
     if (tolower(answer) == 'y') {
         fstream myFile("tripDetails.csv", ios::app);
-        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << endl;
+        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << "," << m.tripIdNumber << "," << m.tripCompleted << endl;
         myFile.close();
 
         cout << "\nYour trip has been ordered.\n\n";
@@ -1230,8 +1344,6 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
         m.itemDescription = item;
         getline(linestream, item, ',');
         m.identifyingFeature = item;
-
-       // tempProperty.push_back(m);
     }
     myFile.close();
     cout << endl;
@@ -1306,3 +1418,10 @@ void YourTripHistory() {
     cout << endl;    
     return;
 }
+
+//int GetTripId() {
+//    Trip m;
+//    m.tripIdNumber = tripIdNumber;
+//    tripIdNumber++;
+//    return;
+//}
