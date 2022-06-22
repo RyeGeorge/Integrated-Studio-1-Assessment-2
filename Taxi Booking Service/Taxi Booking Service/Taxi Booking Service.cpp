@@ -1422,9 +1422,3 @@ void YourTripHistory() {
     return;
 }
 
-//int GetTripId() {
-//    Trip m;
-//    m.tripIdNumber = tripIdNumber;
-//    tripIdNumber++;
-//    return;
-//}
