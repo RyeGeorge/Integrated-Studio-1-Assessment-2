@@ -741,7 +741,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         cout << "Please enter your password: ";
         cin >> tempPass;
 
-    tempFile.open("tempAccountDetails.csv", ios::out);
+    tempFile.open("temp.csv", ios::out);
 
     myFile.open(fileName, ios::in);
     if (myFile.is_open()) {
@@ -772,7 +772,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         tempFile.close();
 
         myFile.open(fileName, ios::out);
-        tempFile.open("tempAccountDetails.csv", ios::in);
+        tempFile.open("temp.csv", ios::in);
 
         while (getline(tempFile, line)) { //Copies contents of tempFile into main file
             myFile << line << endl;
@@ -893,7 +893,7 @@ void FindNewTrip() {
     cin >> enteredID;
 
     myFile.open("tripDetails.csv", ios::in);
-    tempFile.open("tempAccountDetails.csv", ios::out);
+    tempFile.open("temp.csv", ios::out);
 
     if (enteredID > 0) {
         while (getline(myFile, line)) {
@@ -943,7 +943,7 @@ void FindNewTrip() {
         tempFile.close();
 
         //Copy from tempFile back to myFile
-        tempFile.open("tempAccountDetails.csv", ios::in);
+        tempFile.open("temp.csv", ios::in);
         myFile.open("tripDetails.csv", ios::out);
 
         while (getline(tempFile, line)) {
