@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-myemail@email,3/04/2022,5:00,New York,Mars,80,2,30.5,1,1
-myemail@email,3/04/2022,5:00,Canada,Texas,80,2,30.5,3,1
-myemail@email,3/04/2022,5:00,Hogwarts,Middle Earth,80,2,30.5,2,1
-=======
 name,01/01/01,0900,pickp,desit,10,2,49.5
 test@email.com,02/02/2022,0100,pickup,destination,10,3,66.75
 test@email.com,01/01/2021,0600,pickup address,destination address,20,4,168
 ,21/05/2022,7am,pickup address,destination address,35,2,173.25
 ,22/06/2022,8pm,pickup address,destination address,5,2,24.75,5,0
->>>>>>> d55608d3701f3dd6ace1248d9e2eb058f6369bcb
