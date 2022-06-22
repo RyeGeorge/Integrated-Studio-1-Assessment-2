@@ -418,7 +418,6 @@ void DisplayCarDetails() {
         break;
     }
 
-    MenuLoop();
 }
 
 void PrintCarDetails() {
@@ -625,7 +624,6 @@ void ViewCustomerDetails() {
         break;
     }
 
-    MenuLoop();
 }
 
 void ViewDriverDetails() {
@@ -661,7 +659,6 @@ void ViewDriverDetails() {
         break;
     }
 
-    MenuLoop();
 }
 
 void SearchAccountDetails(string fileName) {
@@ -698,12 +695,10 @@ void SearchAccountDetails(string fileName) {
             if (userDetails.firstName == fName && userDetails.lastName == lName) {
                 cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
                 cout << "Email: \t\t" << userDetails.homeAddress << "\nAddress: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl;
-                break;
             }
         }
-        if (userDetails.firstName != fName && userDetails.lastName != lName)
-            cout << "\nERROR: Accout does not exist\n";
     }
+    myFile.close();
 
     MenuLoop();
 }
@@ -829,10 +824,10 @@ void UpdateAccountDetails(string fileName) {
     cout << "Enter last name: ";
     cin >> userDetails.lastName;
 
-    cout << "Enter email: ";
+    cout << "Enter home address: ";
     cin >> userDetails.homeAddress;
 
-    cout << "Enter address: ";
+    cout << "Enter email: ";
     cin >> userDetails.emailAddress;
 
     cout << "Enter phone number: ";
@@ -861,9 +856,11 @@ void UpdateAccountDetails(string fileName) {
     }
 
     //Adding new account details into file
-    cout << "TEST\n";
     myFile.open(fileName, ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
+
+    currentEmail = userDetails.emailAddress;
+    currentPassword = pw;
 
     MenuLoop();
 }
@@ -935,20 +932,20 @@ void FindNewTrip() {
             //Copy all lines to tempFile except for the one that the driver selected
             int id = stoi(ID);
             if (id != enteredID) {
-                tempFile << tripDetails.emailAddress << ',' 
-                         << tripDetails.tripDate << ',' 
-                         << tripDetails.pickupTime << ',' 
-                         << tripDetails.pickupLocation << "," 
-                         << tripDetails.destinationAddress << ',' 
-                         << tripTime << ','
-                         << passengers << ',' 
-                         << price << ','
-                         << ID << "," 
-                         << tripCompleted << ',' << endl;
+                tempFile << tripDetails.emailAddress << ','
+                    << tripDetails.tripDate << ','
+                    << tripDetails.pickupTime << ','
+                    << tripDetails.pickupLocation << ","
+                    << tripDetails.destinationAddress << ','
+                    << tripTime << ','
+                    << passengers << ','
+                    << price << ','
+                    << ID << ","
+                    << tripCompleted << ',' << endl;
 
-                
+
             }
-            
+
             if (id == enteredID) {
 
                 oEmailAddress = tripDetails.emailAddress;
@@ -988,9 +985,12 @@ void FindNewTrip() {
             << '1' << ',' << endl;
 
         myFile.close();
-    }
 
-    MenuLoop();
+        MenuLoop();
+    }
+    else if (enteredID == 0)
+        DriverMenu();
+
 }
 
 
@@ -1049,7 +1049,8 @@ void CustomerMenu() {
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
         DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
-        MenuLoop();
+        cout << "\nAccount has been removed\n";
+        break;
 
     case 'g': break;
         break;
@@ -1101,7 +1102,8 @@ void DriverMenu() {
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
         DeleteAccount("driverDetails.csv", currentPassword, currentEmail);
-        MenuLoop();
+        cout << "\nAccount has been removed\n";
+        break;
 
     case 'f': break;
         break;
@@ -1380,9 +1382,7 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
         m.identifyingFeature = item;
     }
     myFile.close();
-    cout << endl;
 
-    cout << endl;
     return;
 }
 
