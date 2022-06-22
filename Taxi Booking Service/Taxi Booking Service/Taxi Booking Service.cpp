@@ -112,11 +112,6 @@ string currentEmail;
 
 int main()
 {
-    //fstream file;
-    //file.open("tripDetails.csv", ios::out);
-    //file << "myemail@email,03/04/22,5:00,New York,Mars,80,2,30.5,1,0" << endl;
-    //file << "myemail@email,03/04/22,5:00,Hogwarts,Middle Earth,80,2,30.5,2,0" << endl;
-    //file << "myemail@email,03/04/22,5:00,Canada,Texas,80,2,30.5,3,1" << endl;
 
     CompanyHeader();
     cout << "                 Main Menu                    \n";
@@ -719,7 +714,10 @@ void PrintAccountDetails(string fileName) {
             getline(ss, password, ',');
 
             cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
-            cout << "Address: \t\t" << userDetails.homeAddress << "\Email: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl << endl;
+            cout << "Address: \t" << userDetails.homeAddress << endl;
+            cout << "Email: \t\t" << userDetails.emailAddress << endl;
+            cout << "PhoneNumber: \t" << userDetails.phoneNumber << endl;
+            cout << "Password: \\t" << password << endl << endl;
         }
     }
 }
@@ -743,7 +741,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         cout << "Please enter your password: ";
         cin >> tempPass;
 
-    tempFile.open("tempAccountDetails.csv", ios::out);
+    tempFile.open("temp.csv", ios::out);
 
     myFile.open(fileName, ios::in);
     if (myFile.is_open()) {
@@ -774,7 +772,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         tempFile.close();
 
         myFile.open(fileName, ios::out);
-        tempFile.open("tempAccountDetails.csv", ios::in);
+        tempFile.open("temp.csv", ios::in);
 
         while (getline(tempFile, line)) { //Copies contents of tempFile into main file
             myFile << line << endl;
@@ -841,7 +839,8 @@ void UpdateAccountDetails(string fileName) {
     }
 
     //Adding new account details into file
-    myFile.open("customerDetails.csv", ios::app);
+    cout << "TEST\n";
+    myFile.open(fileName, ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
 
 }
@@ -889,11 +888,12 @@ void FindNewTrip() {
     myFile.close();
 
     int enteredID;
-    cout << "\nPlease enter the ID number of the trip you want to take(enter 0 to exit): ";
+    cout << "\nAbove is a list of all avaliable trips (if blank there are no trips avaliable)";
+    cout << "\nPlease enter the ID number of the trip you want to take (enter 0 to exit): ";
     cin >> enteredID;
 
     myFile.open("tripDetails.csv", ios::in);
-    tempFile.open("tempAccountDetails.csv", ios::out);
+    tempFile.open("temp.csv", ios::out);
 
     if (enteredID > 0) {
         while (getline(myFile, line)) {
@@ -943,7 +943,7 @@ void FindNewTrip() {
         tempFile.close();
 
         //Copy from tempFile back to myFile
-        tempFile.open("tempAccountDetails.csv", ios::in);
+        tempFile.open("temp.csv", ios::in);
         myFile.open("tripDetails.csv", ios::out);
 
         while (getline(tempFile, line)) {
@@ -1074,7 +1074,7 @@ void DriverMenu() {
         CompanyHeader();
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
-        DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+        DeleteAccount("driverDetails.csv", currentPassword, currentEmail);
 
     case 'f': break;
         break;
@@ -1197,6 +1197,9 @@ void ManageDriversMenu() {
 
 void NewTrip() { //Enter a new trip
     //Shaun Cooper
+
+    cin.clear();
+    cin.ignore(1000, '\n');
 
     cout << "              New Trip Details     " << endl;
     cout << "------------------------------------------------" << endl;
@@ -1411,8 +1414,8 @@ void YourTripHistory() {
         if (trips[i].emailAddress == currentEmail) {
             cout << "- Date: " << trips[i].tripDate << "Pickup Address: " << trips[i].pickupLocation << ", Destination Address: " << trips[i].destinationAddress << ", Price: $" << trips[i].price << endl;
         }
-        if (trips[i].emailAddress == "admin@taxiapp.com") {
-            cout << trips[i].emailAddress << "," << trips[i].tripDate << "," << trips[i].pickupTime << "," << trips[i].pickupLocation << "," << trips[i].destinationAddress << "," << trips[i].tripTime << "," << trips[i].passengers << "," << trips[i].price << endl;
+        if (currentEmail == "admin@taxiapp.com") {
+            cout << trips[i].emailAddress << "," << trips[i].tripDate << "," << trips[i].pickupTime << "," << trips[i].pickupLocation << "," << trips[i].destinationAddress << "," << trips[i].tripTime << "," << trips[i].passengers << "," << trips[i].price << endl << endl;
         }
     }
     cout << endl;    
