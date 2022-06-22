@@ -1,4 +1,5 @@
 ﻿  Taxi Booking Service.cpp
+<<<<<<< HEAD
 D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(284,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(293,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(722,67): warning C4129: 'E': unrecognized character escape sequence
@@ -6,3 +7,13 @@ D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\
 D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(833,32): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(1220,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Taxi Booking Service.vcxproj -> D:\Yoobee\Integrated-Studio-1\Assessment-2\Git\Integrated-Studio-1-Assessment-2\Taxi Booking Service\x64\Debug\Taxi Booking Service.exe
+=======
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(280,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(289,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(718,67): warning C4129: 'E': unrecognized character escape sequence
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(820,28): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(829,32): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(1094,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Shaun Cooper\source\repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\Taxi Booking Service\Taxi Booking Service.cpp(234): warning C4715: 'LoginLoop': not all control paths return a value
+  Taxi Booking Service.vcxproj -> C:\Users\Shaun Cooper\Source\Repos\Integrated-Studio-1-Assessment-2\Taxi Booking Service\x64\Debug\Taxi Booking Service.exe
+>>>>>>> d55608d3701f3dd6ace1248d9e2eb058f6369bcb
