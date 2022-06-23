@@ -4,6 +4,8 @@
 #include <sstream> //To handle string stream conversion
 #include <vector> //To handle unlimited structure array
 #include <stdlib.h>  //Allows us to use "System("CLS") to clear the console"
+#include <iomanip> //To handle rounding numbers
+#include <cmath> //To handle rounding numbers
 
 using namespace std;
 
@@ -70,7 +72,7 @@ struct Property {
     string identifyingFeature;
 };
 
-void RegisterNewUser(string fileName);
+void RegisterNewUser(string fileName, string type);
 void NewTrip();
 void YourTripHistory();
 void ReportProperty(string fileName, string type);
@@ -143,7 +145,12 @@ int main()
         break;
 
     case 'b': {
-        cout << "What type of registration are you making?:" << endl;
+        system("CLS");
+        CompanyHeader();
+        cout << "             Register New User" << endl;
+        cout << "------------------------------------------------" << endl;
+
+        cout << "\nWhat type of registration are you making?:" << endl;
         cout << "a) Customer\n";
         cout << "b) Driver\n";
         cout << "?: ";
@@ -154,16 +161,18 @@ int main()
             cin >> choice;
             cout << endl;
         }
-        string fileName; //switch to pass correct database file to RegisterNewUser function
+        string fileName, type; //switch to pass correct database file and heading to RegisterNewUser function
         switch (choice) {
         case 'a': fileName = "customerDetails.csv";
+            type = "Customer";
             break;
 
         case 'b': fileName = "driverDetails.csv";
+            type = "Driver";
             break;
         }
 
-        RegisterNewUser(fileName);
+        RegisterNewUser(fileName, type);
 
         Login();
 
@@ -254,10 +263,12 @@ void CompanyHeader() {
 };
 
 
-void RegisterNewUser(string fileName) {
+void RegisterNewUser(string fileName, string type) {
     // Shaun Cooper
+    system("CLS");
 
-    cout << "             Register New User" << endl;
+    CompanyHeader();
+    cout << "            Register New " << type << endl;
     cout << "------------------------------------------------" << endl;
     cin.clear();
     cin.ignore(1000, '\n');
@@ -275,7 +286,7 @@ void RegisterNewUser(string fileName) {
     cout << "Please enter your Phone Number: ";
     cin >> m.phoneNumber;
 
-    RegisterCar(m.firstName, m.lastName);
+    if (type == "Driver") RegisterCar(m.firstName, m.lastName);
 
     cin.clear();
     cin.ignore(1000, '\n');
@@ -305,8 +316,10 @@ void RegisterNewUser(string fileName) {
     
     myFile.close();
 
-    cout << "\nYou have successfully registered.\n\n";
-
+    cout << "\nYou have successfully registered.\n";
+    cout << "Enter any key which will return you to the login menu: ";
+    char input;
+    cin >> input;
     return;
 }
 
@@ -349,7 +362,7 @@ int Re_enterPassword(char  passwd[]) //Check the 'Re-enter' password is the same
     //Shaun Cooper
 
     char compare_password[20] = { 0, };
-    cout << "Re Enter Your password" << endl;
+    cout << "Re Enter Your password: ";
     cin.getline(compare_password, 20);
     if (strcmp(passwd, compare_password))
     {
@@ -370,13 +383,13 @@ void RegisterCar(string firstName, string lastName) {
     carDetails.firstName = firstName;
     carDetails.lastName = lastName;
 
-    cout << "Please enter your vehicals license plate: ";
+    cout << "Please enter your vehicle's license plate: ";
     cin >> carDetails.licensePlate;
 
-    cout << "Please enter your vehicals make: ";
+    cout << "Please enter your vehicle's make: ";
     cin >> carDetails.vehicalMake;
 
-    cout << "Please enter your vehicals model: ";
+    cout << "Please enter your vehicle's model: ";
     cin >> carDetails.vehicalModel;
 
     myFile.open("carDetails.csv", ios::app);
@@ -521,7 +534,7 @@ bool ReadFromLoginFile(string fileName, string pw, string e) {
 void FileComplaint() {
 
     //Rye George
-
+    system("CLS");
     CompanyHeader();
     cout << "               File Complaint                 \n";
     cout << "------------------------------------------------\n\n";
@@ -544,8 +557,9 @@ void FileComplaint() {
 
     cout << "What is your complaint: ";
     getline(cin, complaint);
-    cout << endl << endl;
+    cout << endl;
 
+    cout << "Your complaint has been filed. Please visit our website to understand our complaints policy and what happens next." << endl;
 
     //Write complaint into file
     fstream myFile;
@@ -757,11 +771,21 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
 
     bool detailCheck = false;
 
-        cout << "Please confirm your email and password: \n\n";
-        cout << "Please enter your email: ";
-        cin >> tempEmail;
-        cout << "Please enter your password: ";
-        cin >> tempPass;
+    cout << "Are you sure you want to delete your account?" << endl;
+    cout << "You are currently logged in as " << currentEmail << endl;
+    cout << "Are you sure? (y/n): ";
+    char input;
+    cin >> input;
+    while (input != 'y' && input != 'n') { //Validates if input is an acceptable value
+        CheckInput(input);
+        cin >> input;
+        cout << endl;
+    }
+    switch (input) {
+    case 'y': break;
+    case 'n': if (x == 'c') { CustomerMenu(); }
+            if (x == 'd') { DriverMenu(); }
+    }
 
     tempFile.open("temp.csv", ios::out);
 
@@ -780,7 +804,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
             if (userDetails.emailAddress != currentEmail && password != currentPass) { //If the line has the account registered with the same email and password
 
                 //Copy accoutDetails into tempFile
-                tempFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.emailAddress << "," << userDetails.homeAddress << "," << userDetails.phoneNumber << "," << password << "," << endl;
+                tempFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress  << "," << userDetails.phoneNumber << "," << password << "," << endl;
             }
             else if (userDetails.emailAddress == currentEmail && password == currentPass) { //If the info the user enters matches with an existing account
                 detailCheck = true;
@@ -861,7 +885,6 @@ void UpdateAccountDetails(string fileName) {
     }
 
     //Adding new account details into file
-    cout << "TEST\n";
     myFile.open(fileName, ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
 
@@ -1045,6 +1068,7 @@ void CustomerMenu() {
         break;
 
     case 'f': 
+        system("CLS");
         CompanyHeader();
         cout << "               Delete Account                \n";
         cout << "------------------------------------------------\n\n";
@@ -1228,6 +1252,7 @@ void NewTrip() { //Enter a new trip
 
     cin.clear();
     cin.ignore(1000, '\n');
+    system("CLS");
 
     cout << "              New Trip Details     " << endl;
     cout << "------------------------------------------------" << endl;
@@ -1248,7 +1273,9 @@ void NewTrip() { //Enter a new trip
     cin >> m.passengers;
     cout << "How long will the trip take? (mins): ";
     cin >> m.tripTime;
-    m.price = (m.tripTime * 1.5) * (m.passengers * 1.15 + 1); // $1.50 per min + 15% for 1 passenger, then adding 15% for each successive passenger.
+    float tempPrice;
+    tempPrice = (m.tripTime * 1.5) * (m.passengers * 1.15 + 1); // $1.50 per min + 15% for 1 passenger, then adding 15% for each successive passenger.
+    m.price = floor(tempPrice*100.0)/100.0; //Will always rounded down to two decimal places
     cout << "\nThe price of your trip is: $" << m.price << endl;
     cout << endl;
 
@@ -1276,7 +1303,7 @@ void NewTrip() { //Enter a new trip
         cout << "\nYour trip has been ordered.\n\n";
     }
     else
-        cout << "\nTrip cancelled...\n\n";
+        cout << "\nTrip cancelled...\n";
 
     MenuLoop();
     return;
@@ -1285,6 +1312,8 @@ void NewTrip() { //Enter a new trip
 void ReportProperty(string fileName, string type) { //Report lost or found property
     //Shaun Cooper
 
+    system("CLS");
+    CompanyHeader();
     cout << "            Report " << type << " Property  " << endl;
     cout << "------------------------------------------------" << endl;
 
@@ -1341,7 +1370,7 @@ void ReportProperty(string fileName, string type) { //Report lost or found prope
         myFile << m.email << "," << m.itemType << "," << m.itemDescription << "," << m.identifyingFeature << endl;
         myFile.close();
 
-        cout << "\nYour report has been submitted." << endl;
+        cout << "\nYour report has been submitted. ";
         if (fileName == "lostProperty.csv") { cout << "We will contact you on " << currentEmail << " when the property is found." << endl; }
 
         cout << "\nWould you like to enter another " << type << " Property Report ? (y / n) : ";
@@ -1388,7 +1417,9 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
 
 void YourTripHistory() {
     //Shaun Cooper
+    system("CLS");
 
+    CompanyHeader();
     cout << "             Your Trip History    " << endl;
     cout << "------------------------------------------------" << endl;
 
