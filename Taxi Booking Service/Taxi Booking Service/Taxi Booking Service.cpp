@@ -37,6 +37,7 @@ struct Trip {
     string pickupLocation;
     int passengers;
     bool tripCompleted;
+    int tripIdNumber;
 
     Trip() {
         emailAddress = "emailAddress";
@@ -48,7 +49,8 @@ struct Trip {
         price = 1;
         pickupLocation = "pickupLocation";
         passengers = 1;
-        tripCompleted = true;
+        tripCompleted = false;
+        tripIdNumber = 0;
     }
 };
 
@@ -62,12 +64,13 @@ struct CarDetails {
 
 
 struct Property {
+    string email;
     string itemType;
     string itemDescription;
     string identifyingFeature;
 };
 
-void RegisterNewUser();
+void RegisterNewUser(string fileName);
 void NewTrip();
 void YourTripHistory();
 void ReportProperty(string fileName, string type);
@@ -81,7 +84,7 @@ bool LoginLoop(string, string, string);
 bool ReadFromLoginFile(string, string, string);
 void CheckInput(char);
 void CompanyHeader();
-void RegisterCar();
+void RegisterCar(string, string);
 
 void FileComplaint();
 void DisplayComplaints();
@@ -97,21 +100,26 @@ void PrintAccountDetails(string);
 void SearchAccountDetails(string);
 void DeleteAccount(string, string, string);
 
-void CustomerMenu(string, string);
+void CustomerMenu();
 void DriverMenu();
 void AdminMenu();
 void ManageCustomersMenu();
 void ManageDriversMenu();
+void MenuLoop();
 
 //Keeps track of current account the user is logged into
 string currentPassword;
 string currentEmail;
 
+//Global variable to return to proper menu
+char x;
+
 int main()
 {
-    NewTrip();
-    YourTripHistory();
+
     CompanyHeader();
+    cout << "                 Main Menu                    \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Login\n";
@@ -134,8 +142,33 @@ int main()
     case 'a': Login(); //AdminMenu(); 
         break;
 
-    case 'b': RegisterNewUser();
+    case 'b': {
+        cout << "What type of registration are you making?:" << endl;
+        cout << "a) Customer\n";
+        cout << "b) Driver\n";
+        cout << "?: ";
+        char choice;
+        cin >> choice;
+        while (choice != 'a' && choice != 'b') { //Validates if input is an acceptable value
+            CheckInput(choice);
+            cin >> choice;
+            cout << endl;
+        }
+        string fileName; //switch to pass correct database file to RegisterNewUser function
+        switch (choice) {
+        case 'a': fileName = "customerDetails.csv";
+            break;
+
+        case 'b': fileName = "driverDetails.csv";
+            break;
+        }
+
+        RegisterNewUser(fileName);
+
+        Login();
+
         break;
+    }
 
     case 'c': break;
         break;
@@ -148,8 +181,9 @@ void Login() {
 
     system("CLS");
     CompanyHeader();
+    cout << "                 Login Menu                    \n";
+    cout << "------------------------------------------------\n\n";
 
-    cout << "                Login Menu                   \n";
     
     string tempEmail;
     string tempPassword;
@@ -170,13 +204,13 @@ void Login() {
 
 
     switch (input) {
-    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { CustomerMenu(currentPassword, currentEmail); }
+    case 'a': if (LoginLoop("customerDetails.csv", tempPassword, tempEmail)) { x = 'c'; CustomerMenu(); }
             break;
 
-    case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { DriverMenu(); }//pass then email
+    case 'b': if (LoginLoop("driverDetails.csv", tempPassword, tempEmail)) { x = 'd'; DriverMenu(); }//pass then email
             break;
 
-    case 'c': if (LoginLoop("adminDetails.csv", tempPassword, tempEmail)) { AdminMenu(); }//Pass then email
+    case 'c': if (LoginLoop("adminDetails.csv", tempPassword, tempEmail)) { x = 'a';  AdminMenu(); }//Pass then email
             break;
     }
 
@@ -195,11 +229,11 @@ bool LoginLoop(string file, string password, string email) {
             currentPassword = password;
             currentEmail = email;
             return true;
-            break;
         }
 
         cout << "\nPassword or Email are incorrect, you have " << i - 1 << " attemps left\n\n\n";
     }
+    return false;
 }
 
 void CheckInput(char input) {
@@ -214,20 +248,19 @@ void CheckInput(char input) {
 }
 
 void CompanyHeader() {
-    // system("CLS");
     cout << "------------------------------------------------\n";
     cout << "            Taxi Booking Service\n";
-    cout << "------------------------------------------------\n\n";
 
 };
 
 
-void RegisterNewUser() {
+void RegisterNewUser(string fileName) {
     // Shaun Cooper
 
-    cout << "--------------------------" << endl;
-    cout << "     Register New User    " << endl;
-    cout << "--------------------------" << endl;
+    cout << "             Register New User" << endl;
+    cout << "------------------------------------------------" << endl;
+    cin.clear();
+    cin.ignore(1000, '\n');
 
     User m;//we receive one user data at any given time
 
@@ -241,6 +274,9 @@ void RegisterNewUser() {
     cin >> m.emailAddress;
     cout << "Please enter your Phone Number: ";
     cin >> m.phoneNumber;
+
+    RegisterCar(m.firstName, m.lastName);
+
     cin.clear();
     cin.ignore(1000, '\n');
 
@@ -255,7 +291,7 @@ void RegisterNewUser() {
             cin.getline(m.password, 20);
             length = strlen(m.password);
         } while (length < 8);
-        if (CheckPassword(m.password)) //if return 1 pass below
+        if (CheckPassword(m.password)) //if return 1/true pass below
             continue;
         if (Re_enterPassword(m.password))
             continue;
@@ -263,14 +299,13 @@ void RegisterNewUser() {
         break;
     }
 
-    //Write trip details to database
-    int i;
-    fstream myFile("customerDetails.csv", ios::app);
+    //Write details to database
+    fstream myFile(fileName, ios::app);
     myFile << m.firstName << "," << m.lastName << "," << m.homeAddress << "," << m.emailAddress << "," << m.phoneNumber << "," << m.password << endl;
     
     myFile.close();
 
-    cout << "\nYou have successfully registered a new user.\n\n";
+    cout << "\nYou have successfully registered.\n\n";
 
     return;
 }
@@ -325,23 +360,17 @@ int Re_enterPassword(char  passwd[]) //Check the 'Re-enter' password is the same
 }
 
 
-void RegisterCar() {
+void RegisterCar(string firstName, string lastName) {
 
     //Rye George
 
     CarDetails carDetails;
-    string firstName, lastName;
     fstream myFile;
 
-    cout << "\nTo register your vehical please enter the following details: \n";
+    carDetails.firstName = firstName;
+    carDetails.lastName = lastName;
 
-    cout << "Please enter the first name registered to the vehical: ";
-    cin >> firstName;
-
-    cout << "Please enter the last name registered to the vehical: ";
-    cin >> lastName;
-
-    cout << "Please enter your license plate: ";
+    cout << "Please enter your vehicals license plate: ";
     cin >> carDetails.licensePlate;
 
     cout << "Please enter your vehicals make: ";
@@ -360,6 +389,9 @@ void RegisterCar() {
 void DisplayCarDetails() {
 
     //Rye George
+    CompanyHeader();
+    cout << "                 Car Details                    \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view car details, please choose one of the following options:\n";
 
@@ -385,6 +417,7 @@ void DisplayCarDetails() {
     case 'c': break;
         break;
     }
+
 }
 
 void PrintCarDetails() {
@@ -408,6 +441,8 @@ void PrintCarDetails() {
         cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
     }
     myFile.close();
+
+    MenuLoop();
 }
 
 void SearchCarDetails() {
@@ -443,35 +478,9 @@ void SearchCarDetails() {
         }
     }
     myFile.close();
+
+    MenuLoop();
 }
-
-
-void OutputDetails(vector<User>& customer) { //outputMarker to produce the output on the console
-    //Shaun Cooper
-
-    cout << "\nFrom outputDetails Function";
-    cout << "\n***************************";
-    int i;
-    for (i = 0; i < customer.size(); i++) {
-        cout << "\nThe name you entered is: " << customer[i].firstName;
-        cout << "\nThe phone number you entered is: " << customer[i].phoneNumber;
-    }
-}
-
-
-void WriteToFile(vector<User>& customer) { //writeToFile function facilitates the storing of customer detials
-    //Shaun Cooper
-
-    cout << "\nWriting to file ";
-    cout << "\n***************************";
-    int i;
-    fstream myFile("customerDetails.csv", ios::app);
-    for (i = 0; i < customer.size(); i++) {
-        myFile << customer[i].firstName << "," << customer[i].lastName << "," << customer[i].emailAddress << "," << customer[i].homeAddress << "," << customer[i].phoneNumber << "," << customer[i].password << endl;
-    }
-    myFile.close();
-}
-
 
 bool ReadFromLoginFile(string fileName, string pw, string e) {
 
@@ -512,6 +521,10 @@ void FileComplaint() {
 
     //Rye George
 
+    CompanyHeader();
+    cout << "               File Complaint                 \n";
+    cout << "------------------------------------------------\n\n";
+
     string driverFirstName, driverLastName, complaint;
 
     cout << "\nFill out the below information to file a complaint against a driver\n\n";
@@ -541,11 +554,17 @@ void FileComplaint() {
 
         myFile << driverFirstName << "," << driverLastName << "," << complaint << "," << endl;
     }
+
+    MenuLoop();
 }
 
 void DisplayComplaints() {
 
     //Rye George
+
+    CompanyHeader();
+    cout << "               View Complaints                \n";
+    cout << "------------------------------------------------\n\n";
 
     fstream myFile;
 
@@ -568,11 +587,17 @@ void DisplayComplaints() {
             cout << "     Complaint:  " << complaint << endl << endl;
         }
     }
+
+    MenuLoop();
 }
 
 void ViewCustomerDetails() {
 
     //Rye George
+
+    CompanyHeader();
+    cout << "              Customer Details                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view customer details, please choose one of the following options:\n";
 
@@ -598,11 +623,16 @@ void ViewCustomerDetails() {
     case 'c': break;
         break;
     }
+
 }
 
 void ViewDriverDetails() {
 
     //Rye George
+
+    CompanyHeader();
+    cout << "               Driver Details                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "\nTo view driver details, please choose one of the following options:\n";
 
@@ -621,13 +651,14 @@ void ViewDriverDetails() {
 
 
     switch (input) {
-    case 'a': //SearchAccountDetails("driverDetails.csv");
+    case 'a': SearchAccountDetails("driverDetails.csv");
         break;
-    case 'b': //PrintAccountDetails("driverDetails.csv");
+    case 'b': PrintAccountDetails("driverDetails.csv");
         break;
     case 'c': break;
         break;
     }
+
 }
 
 void SearchAccountDetails(string fileName) {
@@ -664,12 +695,12 @@ void SearchAccountDetails(string fileName) {
             if (userDetails.firstName == fName && userDetails.lastName == lName) {
                 cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
                 cout << "Email: \t\t" << userDetails.homeAddress << "\nAddress: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl;
-                break;
             }
         }
-        if (userDetails.firstName != fName && userDetails.lastName != lName)
-            cout << "\nERROR: Accout does not exist\n";
     }
+    myFile.close();
+
+    MenuLoop();
 }
 
 void PrintAccountDetails(string fileName) {
@@ -698,9 +729,14 @@ void PrintAccountDetails(string fileName) {
             getline(ss, password, ',');
 
             cout << endl << userDetails.firstName << " " << userDetails.lastName << endl;
-            cout << "Address: \t\t" << userDetails.homeAddress << "\Email: \t" << userDetails.emailAddress << "\nPhoneNumber: \t" << userDetails.phoneNumber << "\nPassword: \t" << password << endl << endl;
+            cout << "Address: \t" << userDetails.homeAddress << endl;
+            cout << "Email: \t\t" << userDetails.emailAddress << endl;
+            cout << "PhoneNumber: \t" << userDetails.phoneNumber << endl;
+            cout << "Password: \\t" << password << endl << endl;
         }
     }
+
+    MenuLoop();
 }
 
 void DeleteAccount(string fileName, string currentPass, string currentEmail) {
@@ -722,7 +758,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         cout << "Please enter your password: ";
         cin >> tempPass;
 
-    tempFile.open("tempAccountDetails.csv", ios::out);
+    tempFile.open("temp.csv", ios::out);
 
     myFile.open(fileName, ios::in);
     if (myFile.is_open()) {
@@ -753,7 +789,7 @@ void DeleteAccount(string fileName, string currentPass, string currentEmail) {
         tempFile.close();
 
         myFile.open(fileName, ios::out);
-        tempFile.open("tempAccountDetails.csv", ios::in);
+        tempFile.open("temp.csv", ios::in);
 
         while (getline(tempFile, line)) { //Copies contents of tempFile into main file
             myFile << line << endl;
@@ -771,6 +807,10 @@ void UpdateAccountDetails(string fileName) {
 
     //Rye George
 
+    CompanyHeader();
+    cout << "               Update Account                \n";
+    cout << "------------------------------------------------\n\n";
+
     User userDetails;
     fstream myFile;
 
@@ -784,10 +824,10 @@ void UpdateAccountDetails(string fileName) {
     cout << "Enter last name: ";
     cin >> userDetails.lastName;
 
-    cout << "Enter email: ";
+    cout << "Enter home address: ";
     cin >> userDetails.homeAddress;
 
-    cout << "Enter address: ";
+    cout << "Enter email: ";
     cin >> userDetails.emailAddress;
 
     cout << "Enter phone number: ";
@@ -816,8 +856,140 @@ void UpdateAccountDetails(string fileName) {
     }
 
     //Adding new account details into file
-    myFile.open("customerDetails.csv", ios::app);
+    myFile.open(fileName, ios::app);
     myFile << userDetails.firstName << "," << userDetails.lastName << "," << userDetails.homeAddress << "," << userDetails.emailAddress << "," << userDetails.phoneNumber << "," << pw << "," << endl;
+
+    currentEmail = userDetails.emailAddress;
+    currentPassword = pw;
+
+    MenuLoop();
+}
+
+
+void FindNewTrip() {
+
+    //Rye George
+
+    fstream myFile, tempFile;
+    string line;
+    Trip tripDetails;
+    string tripTime, price, passengers, ID, tripCompleted;
+    string oEmailAddress, oTripDate, oPickupTime, oPickupLocation, oDestinationLocation, oTripTime, oPassengers, oPrice, oID, temp;
+    int maxID = 0;
+
+    myFile.open("tripDetails.csv", ios::in);
+    while (getline(myFile, line)) {
+        stringstream ss(line);
+
+        getline(ss, tripDetails.emailAddress, ',');
+        getline(ss, tripDetails.tripDate, ',');
+        getline(ss, tripDetails.pickupTime, ',');
+        getline(ss, tripDetails.pickupLocation, ',');
+        getline(ss, tripDetails.destinationAddress, ',');
+        getline(ss, tripTime, ',');
+        getline(ss, passengers, ',');
+        getline(ss, price, ',');
+        getline(ss, ID, ',');
+        getline(ss, tripCompleted, ',');
+
+        if (tripCompleted == "0") {
+            cout << endl;
+            cout << "ID " << ID << ":\t\t\t";
+            cout << tripDetails.tripDate << endl;
+            
+            cout << "Customer Email: \t" << tripDetails.emailAddress << endl;
+            cout << "Pickup Location: \t" << tripDetails.pickupLocation << endl;
+            cout << "Pickup time: \t\t" << tripDetails.pickupTime << endl;
+            cout << "Destination Address: \t" << tripDetails.destinationAddress << endl;
+            cout << "Number Of Passengers: \t" << passengers << endl;
+            cout << "Price: \t\t\t" << "$" << price << endl;
+        }
+    }
+    myFile.close();
+
+    int enteredID;
+    cout << "\nAbove is a list of all avaliable trips (if blank there are no trips avaliable)";
+    cout << "\nPlease enter the ID number of the trip you want to take (enter 0 to exit): ";
+    cin >> enteredID;
+
+    myFile.open("tripDetails.csv", ios::in);
+    tempFile.open("temp.csv", ios::out);
+
+    if (enteredID > 0) {
+        while (getline(myFile, line)) {
+            stringstream ss(line);
+            getline(ss, tripDetails.emailAddress, ',');
+            getline(ss, tripDetails.tripDate, ',');
+            getline(ss, tripDetails.pickupTime, ',');
+            getline(ss, tripDetails.pickupLocation, ',');
+            getline(ss, tripDetails.destinationAddress, ',');
+            getline(ss, tripTime, ',');
+            getline(ss, passengers, ',');
+            getline(ss, price, ',');
+            getline(ss, ID, ',');
+            getline(ss, tripCompleted, ',');
+
+            //Copy all lines to tempFile except for the one that the driver selected
+            int id = stoi(ID);
+            if (id != enteredID) {
+                tempFile << tripDetails.emailAddress << ','
+                    << tripDetails.tripDate << ','
+                    << tripDetails.pickupTime << ','
+                    << tripDetails.pickupLocation << ","
+                    << tripDetails.destinationAddress << ','
+                    << tripTime << ','
+                    << passengers << ','
+                    << price << ','
+                    << ID << ","
+                    << tripCompleted << ',' << endl;
+
+
+            }
+
+            if (id == enteredID) {
+
+                oEmailAddress = tripDetails.emailAddress;
+                oTripDate = tripDetails.tripDate;
+                oPickupTime = tripDetails.pickupTime;
+                oPickupLocation = tripDetails.pickupLocation;
+                oDestinationLocation = tripDetails.destinationAddress;
+                oTripTime = tripTime;
+                oPassengers = passengers;
+                oPrice = price;
+
+            }
+        }
+        myFile.close();
+        tempFile.close();
+
+        //Copy from tempFile back to myFile
+        tempFile.open("temp.csv", ios::in);
+        myFile.open("tripDetails.csv", ios::out);
+
+        while (getline(tempFile, line)) {
+            myFile << line << endl;
+        }
+        myFile.close();
+
+        myFile.open("tripDetails.csv", ios::app);
+
+        myFile << oEmailAddress << ','
+            << oTripDate << ','
+            << oPickupTime << ','
+            << oPickupLocation << ","
+            << oDestinationLocation << ','
+            << oTripTime << ','
+            << oPassengers << ','
+            << oPrice << ','
+            << enteredID << ","
+            << '1' << ',' << endl;
+
+        myFile.close();
+
+        MenuLoop();
+    }
+    else if (enteredID == 0)
+        DriverMenu();
 
 }
 
@@ -827,21 +999,22 @@ void UpdateAccountDetails(string fileName) {
 //
 
 
-void CustomerMenu(string pass, string email) {
+void CustomerMenu() {
 
     // Rye George
 
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "               Customer Menu                 \n\n";
+    cout << "                Customer Menu                \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Enter new trip\n";
     cout << "b) Update account details\n";
     cout << "c) Search trip history\n";
     cout << "d) Report lost property\n";
-    cout << "e) Report complaint\n";
+    cout << "e) File complaint\n";
     cout << "f) Delete Account\n";
     cout << "g) Exit\n";
 
@@ -862,7 +1035,7 @@ void CustomerMenu(string pass, string email) {
     case 'b': UpdateAccountDetails("customerDetails.csv");
         break;
 
-    case 'c': //Search trip history
+    case 'c': YourTripHistory();
         break;
          
     case 'd': ReportProperty("lostProperty.csv", "Lost");
@@ -871,7 +1044,18 @@ void CustomerMenu(string pass, string email) {
     case 'e': FileComplaint();
         break;
 
-    case 'f': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+    case 'f': 
+        CompanyHeader();
+        cout << "               Delete Account                \n";
+        cout << "------------------------------------------------\n\n";
+        DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+        cout << "\nAccount has been removed\n";
+        cout << "Enter any key to exit: ";
+        char input;
+        cin >> input;
+        system("CLS");
+        main();
+        break;
 
     case 'g': break;
         break;
@@ -885,8 +1069,9 @@ void DriverMenu() {
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "                Driver Menu                 \n\n";
-
+    cout << "                 Driver Menu                \n";
+    cout << "------------------------------------------------\n\n";
+    
     cout << "Please choose one of the following options:\n";
     cout << "a) Find new trip\n";
     cout << "b) Search trip history\n";
@@ -905,19 +1090,30 @@ void DriverMenu() {
     }
 
     switch (input) {
-    case 'a': //Find new trip
+    case 'a': FindNewTrip();
         break;
 
-    case 'b': //Search trip history
+    case 'b': YourTripHistory();
         break;
 
-    case 'c': //Report found property
+    case 'c': ReportProperty("foundProperty.csv", "Found");
         break;
 
-    case 'd': //Update Account details
+    case 'd': UpdateAccountDetails("driverDetails.csv");
         break;
 
-    case 'e': //DeleteDriverAccount
+    case 'e': 
+        CompanyHeader();
+        cout << "               Delete Account                \n";
+        cout << "------------------------------------------------\n\n";
+        DeleteAccount("driverDetails.csv", currentPassword, currentEmail);
+        cout << "\nAccount has been removed\n";
+        cout << "Enter any key to exit: ";
+        char input;
+        cin >> input;
+        system("CLS");
+        main();
+        break;
 
     case 'f': break;
         break;
@@ -931,7 +1127,8 @@ void AdminMenu() {
     system("CLS");  //Clears console
 
     CompanyHeader();
-    cout << "                 Admin Menu                 \n\n";
+    cout << "                 Admin Menu                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) Search all trip history\n";
@@ -950,7 +1147,7 @@ void AdminMenu() {
     }
 
     switch (input) {
-    case 'a': //Search all trip history
+    case 'a': YourTripHistory();
         break;
 
     case 'b': ManageDriversMenu();
@@ -959,7 +1156,10 @@ void AdminMenu() {
     case 'c': ManageCustomersMenu();
         break;
 
-    case 'd': //Search lost/found property
+    case 'd': 
+        DisplayProperty("lostProperty.csv", "Lost");
+        DisplayProperty("foundProperty.csv", "Found");
+        MenuLoop();
         break;
 
     case 'e': break;
@@ -971,14 +1171,14 @@ void ManageCustomersMenu() {
 
     //Rye George
 
-    cout << "--------------------------" << endl;
-    cout << "     Manage Customers     " << endl;
-    cout << "--------------------------" << endl;
+    CompanyHeader();
+    cout << "              Manage Customers                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) View customer details\n";
-    cout << "b) Delete a customers account\n";
-    cout << "e) Exit\n";
+    cout << "b) View customer complaints\n";
+    cout << "c) Exit\n";
 
     char input;
     cin >> input;
@@ -993,7 +1193,7 @@ void ManageCustomersMenu() {
     case 'a': ViewCustomerDetails();
         break;
 
-    case 'b': DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
+    case 'b': DisplayComplaints();
         break;
 
     case 'c': break;
@@ -1005,14 +1205,14 @@ void ManageDriversMenu() {
 
     //Rye George
 
-    cout << "--------------------------" << endl;
-    cout << "      Manage Drivers      " << endl;
-    cout << "--------------------------" << endl;
+    CompanyHeader();
+    cout << "               Manage Drivers                 \n";
+    cout << "------------------------------------------------\n\n";
 
     cout << "Please choose one of the following options:\n";
     cout << "a) View driver details\n";
-    cout << "b) Delete a drivers account\n";
-    cout << "e) Exit\n";
+    cout << "b) View car details\n";
+    cout << "c) Exit\n";
 
     char input;
     cin >> input;
@@ -1027,7 +1227,7 @@ void ManageDriversMenu() {
     case 'a': ViewDriverDetails();
         break;
 
-    case 'b': //RemoveDriver();
+    case 'b': DisplayCarDetails();
         break;
 
     case 'c': break;
@@ -1038,11 +1238,16 @@ void ManageDriversMenu() {
 void NewTrip() { //Enter a new trip
     //Shaun Cooper
 
-    cout << "--------------------------" << endl;
-    cout << "     New Trip Details     " << endl;
-    cout << "--------------------------" << endl;
+    cin.clear();
+    cin.ignore(1000, '\n');
+
+    cout << "              New Trip Details     " << endl;
+    cout << "------------------------------------------------" << endl;
 
     Trip m;//we receive one user data at any given time
+    m.emailAddress = currentEmail; //email is updated by the logged in user
+    /*cin.clear();
+    cin.ignore(1000, '\n');*/
     cout << "\nEnter the destination address: ";
     getline(cin, m.destinationAddress);
     cout << "Enter your pickup address: ";
@@ -1051,8 +1256,6 @@ void NewTrip() { //Enter a new trip
     getline(cin, m.tripDate);
     cout << "Enter the time you would like to be picked up: ";
     getline(cin, m.pickupTime);
-    cout << "Enter your email address: ";
-    getline(cin, m.emailAddress);
     cout << "How many passengers will there be?: ";
     cin >> m.passengers;
     cout << "How long will the trip take? (mins): ";
@@ -1065,11 +1268,21 @@ void NewTrip() { //Enter a new trip
     cout << "Enter 'y' to accept or 'n' to cancel: ";
     cin >> answer;
     
+    //Obtain trip ID number by counting amount of lines in database
+    fstream myFile("tripDetails.csv", ios::in);
+    string line;
+    int count = 0;
+    while (getline(myFile, line)) {
+        istringstream linestream(line);//to split the row into coloumns/properties
+        count++;
+    }
+    myFile.close();
+    m.tripIdNumber = count + 1; //Next number in list
 
     //Write trip details to database
     if (tolower(answer) == 'y') {
         fstream myFile("tripDetails.csv", ios::app);
-        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << endl;
+        myFile << m.emailAddress << "," << m.tripDate << "," << m.pickupTime << "," << m.pickupLocation << "," << m.destinationAddress << "," << m.tripTime << "," << m.passengers << "," << m.price << "," << m.tripIdNumber << "," << m.tripCompleted << endl;
         myFile.close();
 
         cout << "\nYour trip has been ordered.\n\n";
@@ -1077,17 +1290,18 @@ void NewTrip() { //Enter a new trip
     else
         cout << "\nTrip cancelled...\n\n";
 
+    MenuLoop();
     return;
 }
 
 void ReportProperty(string fileName, string type) { //Report lost or found property
     //Shaun Cooper
 
-    cout << "--------------------------" << endl;
-    cout << "   Report " << type << " Property  " << endl;
-    cout << "--------------------------" << endl;
+    cout << "            Report " << type << " Property  " << endl;
+    cout << "------------------------------------------------" << endl;
 
     Property m;
+    m.email = currentEmail; //email is updated by the logged in user
     char loop = 'y';
     while (loop == 'y') {
         cout << "\nEnter the item type\n"; //Will force to choose an option for easier search function
@@ -1136,24 +1350,26 @@ void ReportProperty(string fileName, string type) { //Report lost or found prope
 
         //Write trip details to database
         fstream myFile(fileName, ios::app);
-        myFile << m.itemType << "," << m.itemDescription << "," << m.identifyingFeature << endl;
+        myFile << m.email << "," << m.itemType << "," << m.itemDescription << "," << m.identifyingFeature << endl;
         myFile.close();
 
         cout << "\nYour report has been submitted." << endl;
+        if (fileName == "lostProperty.csv") { cout << "We will contact you on " << currentEmail << " when the property is found." << endl; }
 
-        cout << "\nWould you like to enter another found property? (y/n): ";
+        cout << "\nWould you like to enter another " << type << " Property Report ? (y / n) : ";
         cin >> loop;
         cout << endl;
     }
+
+    MenuLoop();
     return;
 }
 
 void DisplayProperty(string fileName, string type) { //Display all lost or found property
     //Shaun Cooper
 
-    cout << "---------------------------" << endl;
-    cout << "   Display " << type << " Property  " << endl;
-    cout << "---------------------------" << endl;
+    cout << "            Display " << type << " Property  " << endl;
+    cout << "------------------------------------------------" << endl;
 
     cout << "\nBelow is a list of all the " << type << " property on file : \n\n";
     //open file to search not append
@@ -1174,77 +1390,33 @@ void DisplayProperty(string fileName, string type) { //Display all lost or found
         m.itemDescription = item;
         getline(linestream, item, ',');
         m.identifyingFeature = item;
-
-       // tempProperty.push_back(m);
     }
     myFile.close();
-    cout << endl;
 
-    char answer = 'y';
-    while (tolower(answer) == 'y') {
-        cout << "When you have finished reviewing the items, press any key then enter to exit.";
-        cin >> answer;
-    }
-
-    cout << endl;
     return;
 }
 
 void YourTripHistory() {
     //Shaun Cooper
 
-    cout << "--------------------------" << endl;
-    cout << "     Your Trip History    " << endl;
-    cout << "--------------------------" << endl;
+    cout << "             Your Trip History    " << endl;
+    cout << "------------------------------------------------" << endl;
 
     fstream myFile;
 
-    string line, email, pass, password;
+    string line, password;
     User customerInfo;
 
-    bool detailCheck = false;
-    while (detailCheck == false){
-        cout << "\nPlease confirm your account...\n";
-
-        cout << "Enter your email: ";
-        cin >> email;
-
-        cout << "Enter your password: ";
-        cin >> pass;
-        cout << endl;
-
-        myFile.open("customerDetails.csv", ios::in);
-        if (myFile.is_open()) {
-            while (getline(myFile, line)) {
-                cin.clear();
-                cin.ignore(1000, '\n');
-                stringstream ss(line);
-                string password = customerInfo.password;
-
-                getline(ss, customerInfo.firstName, ',');
-                getline(ss, customerInfo.lastName, ',');
-                getline(ss, customerInfo.homeAddress, ',');
-                getline(ss, customerInfo.emailAddress, ',');
-                getline(ss, customerInfo.phoneNumber, ',');
-                getline(ss, password, ',');
-                       
-                if (customerInfo.emailAddress == email && password == pass) { //If the info the user enters matches with an existing account
-                    detailCheck = true;
-                    myFile.close();
-                }
-                else {
-                    cout << "ERROR: Account does not exist\n";
-                }
-            }
-        }
-    }
+    cout << "\nYou are logged in as: " << currentEmail << endl;
+    if (currentEmail == "admin@taxiapp.com") { cout << "Due to being an admin user, the console will display all of the trip information...\n" << endl; }
+    else cout << "Below is a summary of your trip history:\n" << endl;
 
     myFile.open("tripDetails.csv", ios::in);
     int i = 0;
     vector<Trip> trips;
     Trip m;
-    int tripTime, passengers;
-    float price;
+    int tripTime, passengers; //create local variables to convert from string
+    float price; //create local variables to convert from string
 
     while (getline(myFile, line)) {
         istringstream linestream(line);//to split the row into coloumns/properties
@@ -1270,14 +1442,34 @@ void YourTripHistory() {
         price = stof(item); //use stof() to convert string into float
         m.price = price;
 
-        trips.push_back(m);
+        trips.push_back(m); //keeps adding to the Trip vector
     }
    
     for (i = 0;i < trips.size();i++) {
-        if (trips[i].emailAddress == email) {
+        if (trips[i].emailAddress == currentEmail) {
             cout << "- Date: " << trips[i].tripDate << "Pickup Address: " << trips[i].pickupLocation << ", Destination Address: " << trips[i].destinationAddress << ", Price: $" << trips[i].price << endl;
         }
+        if (currentEmail == "admin@taxiapp.com") {
+            cout << trips[i].emailAddress << "," << trips[i].tripDate << "," << trips[i].pickupTime << "," << trips[i].pickupLocation << "," << trips[i].destinationAddress << "," << trips[i].tripTime << "," << trips[i].passengers << "," << trips[i].price << endl << endl;
+        }
     }
-    cout << endl;    
+    cout << endl;  
+
+    MenuLoop();
     return;
+}
+
+void MenuLoop() {
+    cout << "\n\nEnter any key to exit: ";
+    char input;
+    cin >> input;
+    
+    switch (x) {
+    case 'c': CustomerMenu();
+        break;
+    case 'd': DriverMenu();
+        break;
+    case 'a': AdminMenu();
+        break;
+    }
 }
