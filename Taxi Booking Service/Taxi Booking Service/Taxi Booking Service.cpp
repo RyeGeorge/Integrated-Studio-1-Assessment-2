@@ -60,8 +60,8 @@ struct CarDetails {
     string firstName;
     string lastName;
     string licensePlate;
-    string vehicalMake;
-    string vehicalModel;
+    string vehicleMake;
+    string vehicleModel;
 };
 
 
@@ -387,14 +387,14 @@ void RegisterCar(string firstName, string lastName) {
     cin >> carDetails.licensePlate;
 
     cout << "Please enter your vehicle's make: ";
-    cin >> carDetails.vehicalMake;
+    cin >> carDetails.vehicleMake;
 
     cout << "Please enter your vehicle's model: ";
-    cin >> carDetails.vehicalModel;
+    cin >> carDetails.vehicleModel;
 
     myFile.open("carDetails.csv", ios::app);
     if (myFile.is_open()) {
-        myFile << firstName << "," << lastName << "," << carDetails.licensePlate << "," << carDetails.vehicalMake << "," << carDetails.vehicalModel << "," << endl;
+        myFile << firstName << "," << lastName << "," << carDetails.licensePlate << "," << carDetails.vehicleMake << "," << carDetails.vehicleModel << "," << endl;
     }
     myFile.close();
 }
@@ -448,10 +448,10 @@ void PrintCarDetails() {
         getline(ss, carDetails.firstName, ',');
         getline(ss, carDetails.lastName, ',');
         getline(ss, carDetails.licensePlate, ',');
-        getline(ss, carDetails.vehicalMake, ',');
-        getline(ss, carDetails.vehicalModel, ',');
+        getline(ss, carDetails.vehicleMake, ',');
+        getline(ss, carDetails.vehicleModel, ',');
 
-        cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
+        cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicleMake << "\nVehical Model: \t" << carDetails.vehicleModel << "\n";
     }
     myFile.close();
 
@@ -483,11 +483,11 @@ void SearchCarDetails() {
         getline(ss, carDetails.firstName, ',');
         getline(ss, carDetails.lastName, ',');
         getline(ss, carDetails.licensePlate, ',');
-        getline(ss, carDetails.vehicalMake, ',');
-        getline(ss, carDetails.vehicalModel, ',');
+        getline(ss, carDetails.vehicleMake, ',');
+        getline(ss, carDetails.vehicleModel, ',');
 
         if (fName == carDetails.firstName && lName == carDetails.lastName) {
-            cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicalMake << "\nVehical Model: \t" << carDetails.vehicalModel << "\n";
+            cout << "\nFirst Name: \t" << carDetails.firstName << "\nLast Name: \t" << carDetails.lastName << "\nLicense Plate: \t" << carDetails.licensePlate << "\nVehical Make: \t" << carDetails.vehicleMake << "\nVehical Model: \t" << carDetails.vehicleModel << "\n";
         }
     }
     myFile.close();
