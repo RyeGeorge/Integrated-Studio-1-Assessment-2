@@ -75,5 +75,5 @@ carDetails - stores car details
 lostProperty – stores lost property 
 foundProperty – stores found property
 driverComplaints - stores complaints made against drivers
-tempAccountDetails - temporarily holds account information for use in updating account information
+temp - temporarily holds account information for use in updating file information
 
