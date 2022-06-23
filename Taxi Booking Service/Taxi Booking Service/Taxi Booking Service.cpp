@@ -1050,6 +1050,11 @@ void CustomerMenu() {
         cout << "------------------------------------------------\n\n";
         DeleteAccount("customerDetails.csv", currentPassword, currentEmail);
         cout << "\nAccount has been removed\n";
+        cout << "Enter any key to exit: ";
+        char input;
+        cin >> input;
+        system("CLS");
+        main();
         break;
 
     case 'g': break;
@@ -1103,6 +1108,11 @@ void DriverMenu() {
         cout << "------------------------------------------------\n\n";
         DeleteAccount("driverDetails.csv", currentPassword, currentEmail);
         cout << "\nAccount has been removed\n";
+        cout << "Enter any key to exit: ";
+        char input;
+        cin >> input;
+        system("CLS");
+        main();
         break;
 
     case 'f': break;
